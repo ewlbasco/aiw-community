@@ -1,0 +1,4 @@
+interface:
+  display_name: "Website Audit Router"
+  short_description: "Route conversion and visibility audits"
+  default_prompt: "Use $website-audit to diagnose whether this website has a conversion, visibility, or mixed bottleneck."

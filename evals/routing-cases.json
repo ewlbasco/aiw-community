@@ -1,0 +1,56 @@
+[
+  {
+    "prompt": "My homepage gets visitors but almost nobody books a call.",
+    "expected_route": "conversion-engine"
+  },
+  {
+    "prompt": "The offer sounds vague and the CTA just says Learn more.",
+    "expected_route": "conversion-engine"
+  },
+  {
+    "prompt": "Rewrite this landing page for more inquiries.",
+    "expected_route": "conversion-engine",
+    "required_gate": "audit-and-pre-write-plan"
+  },
+  {
+    "prompt": "Why do we not rank on Google?",
+    "expected_route": "visibility-audit"
+  },
+  {
+    "prompt": "Check our robots.txt, sitemap, schema, and Core Web Vitals.",
+    "expected_route": "visibility-audit"
+  },
+  {
+    "prompt": "Can ChatGPT and Perplexity understand and cite this business?",
+    "expected_route": "visibility-audit"
+  },
+  {
+    "prompt": "Audit everything on this website.",
+    "expected_route": "combined"
+  },
+  {
+    "prompt": "We publish regularly but get little traffic and few leads.",
+    "expected_route": "combined"
+  },
+  {
+    "prompt": "Here is pasted homepage copy. Tell me if our technical SEO is correct.",
+    "expected_route": "visibility-audit",
+    "expected_evidence_mode": "pasted",
+    "must_mark_unmeasured": true
+  },
+  {
+    "prompt": "Here is our About section and offer. Why is the business hard to understand?",
+    "expected_route": "conversion-engine",
+    "expected_evidence_mode": "pasted"
+  },
+  {
+    "prompt": "Build a new website immediately from this URL.",
+    "expected_route": "conversion-engine",
+    "required_gate": "audit-and-pre-write-plan"
+  },
+  {
+    "prompt": "Our leads arrive but nobody follows up consistently.",
+    "expected_route": "combined",
+    "expected_primary_bottleneck": "follow-up"
+  }
+]

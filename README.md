@@ -1,0 +1,187 @@
+---
+type: docs
+project: Conversion-Visibility
+source: session
+created: 2026-06-28
+updated: 2026-06-29
+summary: Publishable skill package for routing website problems between conversion and visibility diagnosis.
+tags: [website-audit, conversion, visibility, agent-skill]
+status: active
+related: [projects/conversion-visibility/CURRENT-DIRECTION.md]
+---
+
+# Conversion + Visibility Audit
+
+Diagnose whether a website is difficult to find, difficult to understand, or
+difficult to convert, then identify what should be fixed first.
+
+**Release status:** publishable skill package.
+
+**Recommended GitHub home:** `aiw-community`
+
+**Tool status:** the self-serve web app is being built separately. This
+repository is the skill version people can use right now inside their agent.
+
+Freshness check: 2026-06-29. A current GitHub benchmark found broad SEO skill
+suites, but no stronger equivalent combining evidence-gated conversion and
+visibility routing in one portable package.
+
+## Package Structure
+
+```text
+skills/
+  website-audit/       # Entry point and router
+  conversion-engine/   # Copy, offer, trust, CTA, and funnel diagnosis
+  visibility-audit/    # SEO, GEO, AEO, crawlability, and AI citability
+evals/
+  routing-cases.json
+  conversion-layer-cases.json
+  improvement-loop.md
+  post-run-feedback-template.md
+scripts/
+  validate_bundle.py
+```
+
+`website-audit` is the public entry point. It routes work to the two specialist
+skills instead of duplicating their methods.
+
+## What This Gives People
+
+- One entry skill: `website-audit`
+- Three choices: Conversion Audit, Visibility Audit, or Full Website Audit
+- One free-diagnosis model: audit first, rewrite later
+- One clear boundary: the self-serve tool is still in progress
+
+## Product Modes
+
+- Conversion Audit
+- Visibility Audit
+- Full Website Audit
+
+## Product Ladder
+
+```text
+Free audit + roadmap
+  -> Paid copy rewrite
+  -> Scoped redesign or rebuild service
+```
+
+The public product does not include a self-serve website builder. Structural
+redesign and rebuilding require a service call.
+
+## Install
+
+If this package is published as the first resource in the `aiw-community` repo,
+the clean install path should be one command from the repo root:
+
+```bash
+./install.sh
+```
+
+Manual install is still available if someone wants to inspect the files first:
+
+```bash
+mkdir -p ~/.agents/skills/research
+cp -R skills/website-audit ~/.agents/skills/research/
+cp -R skills/conversion-engine ~/.agents/skills/research/
+cp -R skills/visibility-audit ~/.agents/skills/research/
+```
+
+If the repo is public, the full flow becomes:
+
+```bash
+git clone <repo-url>
+cd aiw-community
+./install.sh
+```
+
+The skills are written to work with Codex, Claude Code, Cursor, Gemini, and
+other agents that load Markdown skill instructions.
+
+## Use
+
+```text
+Use the website-audit skill.
+
+Website URL or pasted copy:
+Desired outcome:
+Optional business context:
+```
+
+Examples:
+
+- "Why does my homepage get attention but few inquiries?"
+- "Can search engines and AI systems understand this business?"
+- "Audit both conversion and visibility, then tell me what to fix first."
+- "Rewrite this page after completing the audit."
+
+The conversion audit classifies every recommendation across five layers:
+Business / Positioning, Messaging, Offer, Trust, and Conversion. It must ask
+whether the recommendation is trying to solve a problem that belongs to an
+upstream layer.
+
+## Improvement Loop
+
+The package should improve after every real use.
+
+Use this loop:
+
+1. Capture the exact prompt, evidence mode, route decision, and weak output.
+2. Record whether the failure was routing, layer classification, evidence
+   honesty, or delivery quality.
+3. Add or update the right fixture in `evals/`.
+4. Update the router or specialist instructions only when the fixture proves
+   the pattern.
+5. Re-run `python3 scripts/validate_bundle.py`.
+6. Do not call the package improved until the fixture exists and validation
+   passes.
+
+Templates for this loop are included in:
+
+- `evals/improvement-loop.md`
+- `evals/post-run-feedback-template.md`
+
+## What To Tell Your Group
+
+Use this exact framing if you want:
+
+```text
+This is the skill version of the Website Audit.
+It helps you choose between a Conversion Audit, a Visibility Audit, or a Full Website Audit.
+It gives you the diagnosis, the priorities, and the action plan first.
+The self-serve tool version is already in progress.
+```
+
+## Evidence Modes
+
+**Pasted-input mode** diagnoses message, offer, trust, and content-readiness
+signals. It does not invent crawlability, rankings, traffic, Core Web Vitals, or
+AI citation results.
+
+**Live-URL mode** can add technical visibility evidence when the agent has
+browser, crawl, or measurement tools.
+
+## Output Options
+
+The skill can produce:
+
+- a plain audit in chat or Markdown
+- a client-facing HTML presentation
+- an editable Word or Google Doc version before final PDF
+
+PDF is an export, not the working format.
+
+## Validate
+
+```bash
+python3 scripts/validate_bundle.py
+```
+
+The validator checks package structure, skill metadata, dependency names,
+routing fixtures, improvement-loop assets, and accidental workspace-specific
+paths.
+
+## License
+
+MIT placeholder is included for packaging convenience. Final repository
+visibility, naming, and licensing stay under Cynthia's control.

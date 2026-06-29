@@ -1,0 +1,4 @@
+interface:
+  display_name: "Visibility Audit"
+  short_description: "Audit SEO, GEO, AEO, and AI visibility"
+  default_prompt: "Use $visibility-audit to assess this website with explicit measured and unmeasured evidence."

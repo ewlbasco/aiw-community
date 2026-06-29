@@ -1,0 +1,46 @@
+[
+  {
+    "scenario": "The homepage tries to serve coaches, agencies, ecommerce brands, and local businesses with no shared transformation.",
+    "expected_layer": "business-positioning",
+    "must_not_recommend_first": "headline rewrite"
+  },
+  {
+    "scenario": "The audience and transformation are clear internally, but the homepage uses vague language that never communicates them.",
+    "expected_layer": "messaging"
+  },
+  {
+    "scenario": "The positioning is clear, but the package has no defined outcome, scope, mechanism, or commitment.",
+    "expected_layer": "offer"
+  },
+  {
+    "scenario": "The promise and offer are clear, but no case study, testimonial, credential, or proof supports the claims.",
+    "expected_layer": "trust"
+  },
+  {
+    "scenario": "The first four layers are clear, but the primary form has twelve fields and the CTA is buried.",
+    "expected_layer": "conversion"
+  },
+  {
+    "scenario": "The recommendation is to add testimonials, but the visitor still cannot understand what the business sells.",
+    "expected_layer": "messaging",
+    "must_defer": "trust"
+  },
+  {
+    "scenario": "The recommendation is to change the CTA, but the offer has no defined outcome or next-step commitment.",
+    "expected_layer": "offer",
+    "must_defer": "conversion"
+  },
+  {
+    "scenario": "The page names the right audience and offer, but the headline describes features instead of the transformation.",
+    "expected_layer": "messaging"
+  },
+  {
+    "scenario": "The page communicates the offer clearly, but the guarantee and delivery scope make the purchase feel risky.",
+    "expected_layer": "offer"
+  },
+  {
+    "scenario": "A redesign is requested even though the real issue is an unresolved target buyer and transformation.",
+    "expected_layer": "business-positioning",
+    "must_not_recommend_first": "rebuild"
+  }
+]

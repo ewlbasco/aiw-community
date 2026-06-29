@@ -1,0 +1,4 @@
+interface:
+  display_name: "Conversion Engine"
+  short_description: "Diagnose website conversion bottlenecks"
+  default_prompt: "Use $conversion-engine to audit this page before proposing a rewrite."
