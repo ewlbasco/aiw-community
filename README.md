@@ -71,14 +71,13 @@ redesign and rebuilding require a service call.
 
 ## Install
 
-If this package is published as the first resource in the `aiw-community` repo,
-the clean install path should be one command from the repo root:
+Install from the repo root:
 
 ```bash
 ./install.sh
 ```
 
-Manual install is still available if someone wants to inspect the files first:
+Manual install is also available:
 
 ```bash
 mkdir -p ~/.agents/skills/research
@@ -87,7 +86,7 @@ cp -R skills/conversion-engine ~/.agents/skills/research/
 cp -R skills/visibility-audit ~/.agents/skills/research/
 ```
 
-If the repo is public, the full flow becomes:
+Full flow:
 
 ```bash
 git clone <repo-url>
@@ -141,17 +140,6 @@ Templates for this loop are included in:
 - `evals/improvement-loop.md`
 - `evals/post-run-feedback-template.md`
 
-## What To Tell Your Group
-
-Use this exact framing if you want:
-
-```text
-This is the skill version of the Website Audit.
-It helps you choose between a Conversion Audit, a Visibility Audit, or a Full Website Audit.
-It gives you the diagnosis, the priorities, and the action plan first.
-The self-serve tool version is already in progress.
-```
-
 ## Evidence Modes
 
 **Pasted-input mode** diagnoses message, offer, trust, and content-readiness
@@ -183,5 +171,4 @@ paths.
 
 ## License
 
-MIT placeholder is included for packaging convenience. Final repository
-visibility, naming, and licensing stay under Cynthia's control.
+This repository is released under the MIT License included in `LICENSE`.
