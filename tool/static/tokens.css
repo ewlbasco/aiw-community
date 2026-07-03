@@ -1,0 +1,42 @@
+/* Edgewise canonical brand system. */
+:root {
+  --color-app-bg: #faf9f6;
+  --color-panel: #f4efea;
+  --color-panel-strong: #ded6ce;
+  --color-ink: #2d2422;
+  --color-ink-soft: #6b605d;
+  --color-rule: #ebe5e0;
+  --color-accent: #b03e3a;
+  --color-accent-dark: #8f302d;
+  --color-fresh: #d4e4a2;
+  --color-focus: #b03e3a;
+  --color-success: #527044;
+  --color-error: #a52828;
+  --color-white: #ffffff;
+  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-body: Manrope, Arial, Helvetica, sans-serif;
+  --font-mono: "Fira Code", "SFMono-Regular", Consolas, monospace;
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+  --space-3xl: 4rem;
+  --text-xs: 0.72rem;
+  --text-sm: 0.86rem;
+  --text-md: 1rem;
+  --text-lg: 1.2rem;
+  --text-xl: 1.7rem;
+  --text-2xl: 2.5rem;
+  --text-display: clamp(2.6rem, 5vw, 4.8rem);
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --rule-thin: 1px;
+  --dur-fast: 140ms;
+  --dur-medium: 240ms;
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+  --ease-in: cubic-bezier(.7, 0, .84, 0);
+  --ease-in-out: cubic-bezier(.65, 0, .35, 1);
+}

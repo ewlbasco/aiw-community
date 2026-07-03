@@ -3,7 +3,7 @@ type: docs
 project: Conversion-Visibility
 source: session
 created: 2026-06-28
-updated: 2026-06-29
+updated: 2026-07-03
 summary: Publishable skill package for routing website problems between conversion and visibility diagnosis.
 tags: [website-audit, conversion, visibility, agent-skill]
 status: active
@@ -22,7 +22,7 @@ difficult to convert, then identify what should be fixed first.
 **Tool status:** the self-serve web app is being built separately. This
 repository is the skill version people can use right now inside their agent.
 
-Freshness check: 2026-07-01. A current GitHub benchmark found broad SEO skill
+Freshness check: 2026-07-03. A current GitHub benchmark found broad SEO skill
 suites, but no stronger equivalent combining evidence-gated conversion and
 visibility routing in one portable package.
 
@@ -30,11 +30,20 @@ visibility routing in one portable package.
 
 ```text
 skills/
-  website-audit/       # Entry point and router
-  conversion-engine/   # Copy, offer, trust, CTA, and funnel diagnosis
-  visibility-audit/    # SEO, GEO, AEO, crawlability, and AI citability
-  qa-audit/            # Validate audit outputs before delivery
-  creative-director/   # Review gate for diagnosis completeness
+  website-audit/              # Entry point and router
+  conversion-engine/          # Copy, offer, trust, CTA, and funnel diagnosis
+  visibility-audit/           # SEO, GEO, AEO, crawlability, and AI citability
+  geo-implementation/         # Fix GEO issues: llms.txt, robots.txt AI, answer capsules
+  positioning-clarity-check/  # Pre-audit intake: detect unclear positioning before audit
+  qa-audit/                   # Validate audit outputs before delivery
+  creative-director/          # Review gate for diagnosis completeness
+tool/
+  app.py                      # Self-serve web app (Python + Flask)
+  audit_engine.py             # Automated audit engine (design + conversion + visibility)
+  report_renderer.py          # Branded HTML report generation
+  templates/                  # Jinja2 templates for report output
+  static/                     # CSS and JS assets for the web interface
+  tests/                      # Unit tests
 evals/
   routing-cases.json
   conversion-layer-cases.json
@@ -44,16 +53,32 @@ scripts/
   validate_bundle.py
 ```
 
-`website-audit` is the public entry point. It routes work to the two specialist
+`website-audit` is the public entry point. It routes work to six specialist
 skills instead of duplicating their methods.
+
+The `tool/` directory contains the self-serve web app version of the audit
+system. It runs the same methodology as the agent skills but in a standalone
+Python app. See `tool/README.md` for setup instructions.
 
 ## What This Gives People
 
 - One entry skill: `website-audit`
 - Three choices: Conversion Audit, Visibility Audit, or Full Website Audit
+- Two fix layers: `geo-implementation` + `positioning-clarity-check`
 - Two quality layers: `qa-audit` (output validation) + `creative-director` (review gate)
+- One design layer: routes to `hallmark` for visual audit (anti-AI-slop quality gate)
 - One free-diagnosis model: audit first, rewrite later
 - One clear boundary: the self-serve tool is still in progress
+
+## Live Demo
+
+See the full audit output in action on a real site
+([keywestkate.com](https://keywestkate.com)):
+
+[https://vercel-share-lime.vercel.app](https://vercel-share-lime.vercel.app)
+
+The demo includes a client review, a detailed specialist audit with evidence,
+and an editable PowerPoint deck.
 
 ## Product Modes
 
@@ -87,6 +112,8 @@ mkdir -p ~/.agents/skills/research
 cp -R skills/website-audit ~/.agents/skills/research/
 cp -R skills/conversion-engine ~/.agents/skills/research/
 cp -R skills/visibility-audit ~/.agents/skills/research/
+cp -R skills/geo-implementation ~/.agents/skills/research/
+cp -R skills/positioning-clarity-check ~/.agents/skills/research/
 cp -R skills/qa-audit ~/.agents/skills/research/
 cp -R skills/creative-director ~/.agents/skills/research/
 ```

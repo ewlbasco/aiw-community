@@ -1,0 +1,7 @@
+name: Positioning Clarity Check
+description: Pre-audit intake for positioning clarity
+instructions:
+  - Check audience, transformation, and differentiation signals before full audit
+  - Block audit if 2+ clarity gaps found
+  - Return positioning fix brief when blocked
+model: gpt-4o

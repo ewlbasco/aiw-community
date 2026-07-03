@@ -8,9 +8,13 @@ mkdir -p "${TARGET_DIR}"
 cp -R "${ROOT_DIR}/skills/website-audit" "${TARGET_DIR}/"
 cp -R "${ROOT_DIR}/skills/conversion-engine" "${TARGET_DIR}/"
 cp -R "${ROOT_DIR}/skills/visibility-audit" "${TARGET_DIR}/"
+cp -R "${ROOT_DIR}/skills/geo-implementation" "${TARGET_DIR}/"
+cp -R "${ROOT_DIR}/skills/positioning-clarity-check" "${TARGET_DIR}/"
+cp -R "${ROOT_DIR}/skills/qa-audit" "${TARGET_DIR}/"
+cp -R "${ROOT_DIR}/skills/creative-director" "${TARGET_DIR}/"
 
 echo "Installed to ${TARGET_DIR}"
 echo "Available skills:"
-echo "- website-audit"
-echo "- conversion-engine"
-echo "- visibility-audit"
+for skill in website-audit conversion-engine visibility-audit geo-implementation positioning-clarity-check qa-audit creative-director; do
+  echo "- $skill"
+done

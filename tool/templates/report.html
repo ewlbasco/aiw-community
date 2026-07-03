@@ -1,0 +1,663 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>{{ audit.brand.name }} Detailed Website Audit</title>
+  <style>
+    /* Hallmark · macrostructure: Long Document · tone: luxury utilitarian · anchor hue: detected brand */
+    /* Hallmark · pre-emit critique: P5 H5 E4 S5 R5 V4 */
+    :root {
+      --color-brand: {{ audit.brand.primary_oklch }};
+      --color-accent: {{ audit.brand.accent_oklch }};
+      --color-ink: oklch(0.19 0.014 255);
+      --color-ink-soft: oklch(0.42 0.018 255);
+      --color-paper: oklch(0.985 0.006 88);
+      --color-paper-2: oklch(0.955 0.009 88);
+      --color-rule: oklch(0.84 0.012 88);
+      --color-white: oklch(1 0 0);
+      --color-danger: oklch(0.51 0.18 28);
+      --color-warning: oklch(0.67 0.14 70);
+      --color-success: oklch(0.48 0.11 155);
+      --color-focus: oklch(0.61 0.16 245);
+      --font-display: {% if audit.brand.display_font %}'{{ audit.brand.display_font }}', {% endif %}Georgia, "Times New Roman", serif;
+      --font-body: {% if audit.brand.body_font %}'{{ audit.brand.body_font }}', {% endif %}Arial, Helvetica, sans-serif;
+      --font-mono: "SFMono-Regular", Consolas, monospace;
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+      --space-3xl: 4rem;
+      --space-4xl: 6rem;
+      --text-xs: 0.72rem;
+      --text-sm: 0.88rem;
+      --text-md: 1rem;
+      --text-lg: 1.22rem;
+      --text-xl: 1.6rem;
+      --text-2xl: 2.35rem;
+      --text-display: clamp(2.6rem, 8vw, 6.6rem);
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --rule-thin: 1px;
+      --dur-fast: 140ms;
+      --ease-out: cubic-bezier(.16, 1, .3, 1);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; overflow-x: clip; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--color-paper);
+      color: var(--color-ink);
+      font-family: var(--font-body);
+      font-size: var(--text-md);
+      line-height: 1.65;
+    }
+    a { color: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button:focus-visible, a:focus-visible {
+      outline: 3px solid var(--color-focus);
+      outline-offset: 3px;
+    }
+
+    .report-nav {
+      align-items: center;
+      backdrop-filter: blur(16px);
+      background: color-mix(in oklch, var(--color-paper) 88%, transparent);
+      border-bottom: var(--rule-thin) solid var(--color-rule);
+      display: flex;
+      gap: var(--space-md);
+      justify-content: space-between;
+      min-height: 64px;
+      padding: var(--space-md) clamp(var(--space-md), 4vw, var(--space-2xl));
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .report-nav__brand {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      overflow-wrap: anywhere;
+    }
+    .report-nav__actions { display: flex; gap: var(--space-sm); }
+    .report-button {
+      align-items: center;
+      background: var(--color-ink);
+      border: 1px solid var(--color-ink);
+      border-radius: var(--radius-sm);
+      color: var(--color-white);
+      cursor: pointer;
+      display: inline-flex;
+      font: 700 var(--text-xs)/1 var(--font-body);
+      justify-content: center;
+      min-height: 40px;
+      padding: 0 var(--space-md);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+      white-space: nowrap;
+    }
+    .report-button:hover { opacity: .82; transform: translateY(-1px); }
+    .report-button:active { transform: translateY(0); }
+
+    .cover {
+      background: var(--color-brand);
+      color: var(--color-white);
+      display: grid;
+      min-height: min(82vh, 820px);
+      padding: clamp(var(--space-xl), 7vw, var(--space-4xl));
+      place-items: end start;
+      position: relative;
+    }
+    .cover__inner { max-width: 1120px; width: 100%; }
+    .cover__meta {
+      display: flex;
+      flex-wrap: wrap;
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      gap: var(--space-sm) var(--space-lg);
+      margin-bottom: var(--space-2xl);
+      text-transform: uppercase;
+    }
+    .cover h1 {
+      font-family: var(--font-display);
+      font-size: var(--text-display);
+      font-weight: 400;
+      letter-spacing: 0;
+      line-height: .93;
+      margin: 0;
+      max-width: 12ch;
+      min-width: 0;
+      overflow-wrap: normal;
+      text-wrap: balance;
+      word-break: normal;
+    }
+    .cover__summary {
+      font-size: var(--text-lg);
+      margin: var(--space-xl) 0 0;
+      max-width: 62ch;
+    }
+
+    .section {
+      border-bottom: var(--rule-thin) solid var(--color-rule);
+      padding: clamp(var(--space-3xl), 8vw, var(--space-4xl)) clamp(var(--space-md), 7vw, var(--space-4xl));
+    }
+    .section__inner { margin: 0 auto; max-width: 1180px; }
+    .section__head {
+      display: grid;
+      gap: var(--space-lg);
+      grid-template-columns: minmax(280px, .95fr) minmax(0, 1.45fr);
+      margin-bottom: var(--space-3xl);
+    }
+    .section__head h2 {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 5vw, 4.5rem);
+      font-weight: 400;
+      letter-spacing: 0;
+      line-height: 1;
+      margin: 0;
+      max-width: 11ch;
+      overflow-wrap: normal;
+      text-wrap: balance;
+      word-break: normal;
+    }
+    .section__head p {
+      color: var(--color-ink-soft);
+      font-size: var(--text-lg);
+      margin: 0;
+      max-width: 62ch;
+    }
+    .section--tint { background: var(--color-paper-2); }
+    .section--dark { background: var(--color-ink); color: var(--color-white); }
+    .section--dark .section__head p { color: color-mix(in oklch, var(--color-white) 70%, transparent); }
+
+    .score-grid {
+      display: grid;
+      gap: var(--space-lg);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .score-block {
+      border-top: 6px solid var(--color-accent);
+      min-height: 260px;
+      padding: var(--space-xl) 0;
+    }
+    .score-block__value {
+      font-family: var(--font-display);
+      font-size: clamp(4rem, 11vw, 8rem);
+      line-height: .82;
+    }
+    .score-block__label {
+      font-size: var(--text-sm);
+      font-weight: 700;
+      margin-top: var(--space-xl);
+      text-transform: uppercase;
+    }
+    .score-block__note {
+      color: var(--color-ink-soft);
+      font-size: var(--text-md);
+      max-width: 42ch;
+    }
+
+    .layer-list { border-top: var(--rule-thin) solid var(--color-rule); }
+    .layer-row {
+      align-items: center;
+      border-bottom: var(--rule-thin) solid var(--color-rule);
+      display: grid;
+      gap: var(--space-lg);
+      grid-template-columns: minmax(0, 1fr) minmax(120px, 2fr) auto;
+      padding: var(--space-lg) 0;
+    }
+    .layer-row__bar {
+      background: var(--color-rule);
+      height: 8px;
+      overflow: hidden;
+    }
+    .layer-row__bar span {
+      background: var(--color-brand);
+      display: block;
+      height: 100%;
+    }
+    .layer-row__score { font-family: var(--font-mono); font-size: var(--text-sm); }
+
+    .priority-list {
+      counter-reset: priority;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .priority {
+      border-top: var(--rule-thin) solid var(--color-rule);
+      counter-increment: priority;
+      display: grid;
+      gap: var(--space-lg);
+      grid-template-areas: "index title body";
+      grid-template-columns: 72px minmax(0, .95fr) minmax(0, 1.55fr);
+      padding: var(--space-xl) 0;
+    }
+    .priority::before {
+      color: var(--color-accent);
+      content: counter(priority, decimal-leading-zero);
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      grid-area: index;
+      line-height: 1;
+    }
+    .priority__title { grid-area: title; min-width: 0; }
+    .priority__body {
+      display: grid;
+      gap: var(--space-lg);
+      grid-area: body;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      min-width: 0;
+    }
+    .priority__stack { min-width: 0; }
+    .priority h3 {
+      font-size: var(--text-xl);
+      line-height: 1.2;
+      margin: 0 0 var(--space-sm);
+      overflow-wrap: normal;
+      text-wrap: balance;
+      word-break: normal;
+    }
+    .priority__meta { color: var(--color-ink-soft); font-family: var(--font-mono); font-size: var(--text-xs); text-transform: uppercase; }
+    .priority p { margin: 0 0 var(--space-md); }
+    .priority strong {
+      color: var(--color-ink);
+      display: block;
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      margin-bottom: var(--space-xs);
+      text-transform: uppercase;
+    }
+
+    .finding-list { display: grid; gap: var(--space-xl); }
+    .finding {
+      border-top: 4px solid var(--color-brand);
+      display: grid;
+      gap: var(--space-lg);
+      grid-template-columns: minmax(0, .75fr) minmax(0, 1.5fr);
+      padding-top: var(--space-lg);
+    }
+    .finding h3 { font-family: var(--font-display); font-size: var(--text-2xl); font-weight: 400; line-height: 1.05; margin: 0; }
+    .finding dl { display: grid; gap: var(--space-md); margin: 0; }
+    .finding dl div { min-width: 0; }
+    .finding dt {
+      color: var(--color-ink);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .finding dd { margin: var(--space-xs) 0 0; }
+    .finding__severity {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      margin-top: var(--space-md);
+      text-transform: uppercase;
+    }
+
+    .keep-grid {
+      display: grid;
+      gap: var(--space-lg);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .keep-item {
+      border-top: var(--rule-thin) solid color-mix(in oklch, var(--color-white) 28%, transparent);
+      font-size: var(--text-lg);
+      padding-top: var(--space-lg);
+    }
+
+    .plan { list-style: none; margin: 0; padding: 0; }
+    .plan li {
+      align-items: start;
+      border-top: var(--rule-thin) solid var(--color-rule);
+      display: grid;
+      gap: var(--space-xl);
+      grid-template-columns: 120px minmax(0, 1fr);
+      padding: var(--space-lg) 0;
+    }
+    .plan strong { font-family: var(--font-mono); font-size: var(--text-sm); text-transform: uppercase; }
+
+    .method {
+      display: grid;
+      gap: var(--space-xl);
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .method h3 { font-size: var(--text-md); margin: 0 0 var(--space-sm); }
+    .method p, .method li { color: var(--color-ink-soft); font-size: var(--text-sm); }
+    .method ul { margin: 0; padding-left: 1.1rem; }
+
+    .report-footer {
+      align-items: end;
+      display: flex;
+      gap: var(--space-xl);
+      justify-content: space-between;
+      padding: var(--space-2xl) clamp(var(--space-md), 7vw, var(--space-4xl));
+    }
+    .report-footer strong { font-family: var(--font-display); font-size: var(--text-xl); }
+    .report-footer small { color: var(--color-ink-soft); }
+
+    @media (max-width: 1100px) {
+      .section__head, .finding { grid-template-columns: minmax(0, 1fr); }
+      .priority {
+        grid-template-areas:
+          "index title"
+          ". body";
+        grid-template-columns: 56px minmax(0, 1fr);
+      }
+      .priority__body { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    @media (max-width: 760px) {
+      .report-nav { align-items: flex-start; flex-direction: column; }
+      .report-nav__actions { width: 100%; }
+      .report-button { flex: 1; }
+      .cover { min-height: 74vh; }
+      .score-grid, .keep-grid, .method { grid-template-columns: minmax(0, 1fr); }
+      .priority { grid-template-columns: 52px minmax(0, 1fr); }
+      .layer-row { grid-template-columns: minmax(0, 1fr) auto; }
+      .layer-row__bar { grid-column: 1 / -1; grid-row: 2; }
+      .plan li { grid-template-columns: 72px minmax(0, 1fr); }
+      .report-footer { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (max-width: 390px) {
+      .report-nav__actions { flex-direction: column; }
+      .priority { grid-template-columns: 40px minmax(0, 1fr); }
+      .section { padding-left: var(--space-md); padding-right: var(--space-md); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
+    }
+
+    @media print {
+      @page { margin: 14mm; size: A4; }
+      body { background: var(--color-white); }
+      .report-nav { display: none; }
+      .cover { min-height: 250mm; break-after: page; print-color-adjust: exact; }
+      .section { break-before: page; padding: 18mm 0; }
+      .finding, .priority, .score-block { break-inside: avoid; }
+      .report-footer { break-before: page; min-height: 80mm; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="report-nav" aria-label="Report actions">
+    <div class="report-nav__brand">{{ audit.brand.name }} detailed audit</div>
+    <div class="report-nav__actions">
+      <button class="report-button" type="button" onclick="downloadSelf()">Download HTML</button>
+    </div>
+  </nav>
+
+  <main>
+    <header class="cover">
+      <div class="cover__inner">
+        <div class="cover__meta">
+          <span>{{ audit.mode|title }} Website Audit</span>
+          <span>{{ audit.generated_at[:10] }}</span>
+          <span>{{ audit.url }}</span>
+        </div>
+        <h1>{{ audit.brand.name }}</h1>
+        <p class="cover__summary">{{ audit.executive_summary }}</p>
+        {% if audit.desired_outcome %}
+        <p class="cover__summary"><strong>Desired outcome supplied:</strong> {{ audit.desired_outcome }}</p>
+        {% endif %}
+      </div>
+    </header>
+
+    <section class="section" id="scores">
+      <div class="section__inner">
+        <header class="section__head">
+          <h2>What the evidence says</h2>
+          <p>Scores are directional. Every measured denominator and every missing evidence class remains visible.</p>
+        </header>
+        <div class="score-grid">
+          {% if audit.mode in ["conversion", "full"] %}
+          <article class="score-block">
+            <div class="score-block__value">{{ audit.conversion.score }}</div>
+            <div class="score-block__label">Conversion readiness / 100</div>
+            <p class="score-block__note">Root layer: {{ audit.conversion.root_layer }}. This score reflects how much friction the current site creates before the next step.</p>
+          </article>
+          {% endif %}
+          {% if audit.mode in ["visibility", "full"] %}
+          <article class="score-block">
+            <div class="score-block__value">{{ audit.visibility.normalized_score }}</div>
+            <div class="score-block__label">Visibility evidence / 100</div>
+            <p class="score-block__note">{{ audit.visibility.measured_score }}/{{ audit.visibility.measured_max }} categories were measured. Unmeasured checks stay out of the score.</p>
+          </article>
+          {% endif %}
+        </div>
+
+        {% if audit.mode in ["conversion", "full"] %}
+        <div class="layer-list" aria-label="Conversion layer scores">
+          {% for layer in audit.conversion.layers %}
+          <div class="layer-row">
+            <strong>{{ layer.name }}</strong>
+            <div class="layer-row__bar" aria-hidden="true"><span style="width: {{ layer.score / layer.max * 100 }}%"></span></div>
+            <span class="layer-row__score">{{ layer.score }}/{{ layer.max }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="section section--tint" id="priorities">
+      <div class="section__inner">
+        <header class="section__head">
+          <h2>Fix these first</h2>
+          <p>The most important problems appear first. Fix the business decision before polishing the page.</p>
+        </header>
+        <ol class="priority-list">
+          {% for finding in audit.priorities %}
+          <li class="priority">
+            <div class="priority__title">
+              <h3>{{ finding.title }}</h3>
+              <div class="priority__meta">{{ finding.layer }} · {{ finding.severity }}</div>
+            </div>
+            <div class="priority__body">
+              <div class="priority__stack">
+                <strong>Evidence</strong>
+                <p>{{ finding.evidence }}</p>
+                <strong>Impact</strong>
+                <p>{{ finding.impact }}</p>
+              </div>
+              <div class="priority__stack">
+                <strong>Exact fix</strong>
+                <p>{{ finding.fix }}</p>
+                <strong>Owner</strong>
+                <p>{{ finding.owner }}</p>
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+        </ol>
+      </div>
+    </section>
+
+    {% if audit.mode in ["conversion", "full"] %}
+    <section class="section" id="conversion-findings">
+      <div class="section__inner">
+        <header class="section__head">
+          <h2>Conversion diagnosis</h2>
+          <p>Every recommendation is classified before copy changes are considered.</p>
+        </header>
+        <div class="finding-list">
+          {% for finding in audit.conversion.findings %}
+          <article class="finding">
+            <div>
+              <h3>{{ finding.title }}</h3>
+              <span class="finding__severity">{{ finding.layer }} · {{ finding.severity }}</span>
+            </div>
+            <dl>
+              <div><dt>Location</dt><dd>{{ finding.location }}</dd></div>
+              <div><dt>Exact evidence</dt><dd>{{ finding.evidence }}</dd></div>
+              <div><dt>Visitor impact</dt><dd>{{ finding.impact }}</dd></div>
+              <div><dt>Root cause</dt><dd>{{ finding.root_cause }}</dd></div>
+              <div><dt>Exact fix</dt><dd>{{ finding.fix }}</dd></div>
+            </dl>
+          </article>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
+    {% if audit.mode in ["visibility", "full"] %}
+    <section class="section" id="visibility-findings">
+      <div class="section__inner">
+        <header class="section__head">
+          <h2>Visibility diagnosis</h2>
+          <p>Technical discovery, on-page clarity, GEO, AEO, source semantics, and response basics are scored only where evidence exists.</p>
+        </header>
+        <div class="layer-list" aria-label="Visibility category scores">
+          {% for category in audit.visibility.categories %}
+          <div class="layer-row">
+            <strong>{{ category.name }}</strong>
+            <div class="layer-row__bar" aria-hidden="true"><span style="width: {{ category.score / category.max * 100 }}%"></span></div>
+            <span class="layer-row__score">{{ category.score }}/{{ category.max }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="finding-list" style="margin-top: var(--space-3xl)">
+          {% for finding in audit.visibility.findings %}
+          <article class="finding">
+            <div>
+              <h3>{{ finding.title }}</h3>
+              <span class="finding__severity">{{ finding.layer }} · {{ finding.severity }}</span>
+            </div>
+            <dl>
+              <div><dt>Location</dt><dd>{{ finding.location }}</dd></div>
+              <div><dt>Exact evidence</dt><dd>{{ finding.evidence }}</dd></div>
+              <div><dt>Visitor or bot impact</dt><dd>{{ finding.impact }}</dd></div>
+              <div><dt>Root cause</dt><dd>{{ finding.root_cause }}</dd></div>
+              <div><dt>Exact fix</dt><dd>{{ finding.fix }}</dd></div>
+            </dl>
+          </article>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
+    {% if audit.opportunities %}
+    <section class="section section--tint" id="opportunities">
+      <div class="section__inner">
+        <header class="section__head">
+          <h2>Growth opportunities</h2>
+          <p>These are offer and marketing opportunities surfaced by the audit, not mandatory fixes.</p>
+        </header>
+        <div class="finding-list">
+          {% for item in audit.opportunities %}
+          <article class="finding">
+            <div>
+              <h3>{{ item.title }}</h3>
+              <span class="finding__severity">Opportunity idea</span>
+            </div>
+            <dl>
+              <div><dt>Why this matters</dt><dd>{{ item.why }}</dd></div>
+              <div><dt>Suggested format</dt><dd>{{ item.format }}</dd></div>
+              <div><dt>Recommended next step</dt><dd>{{ item.next_step }}</dd></div>
+            </dl>
+          </article>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
+    <section class="section section--dark" id="keep">
+      <div class="section__inner">
+        <header class="section__head">
+          <h2>What to preserve</h2>
+          <p>A useful audit protects working assets instead of using a rebuild as the default answer.</p>
+        </header>
+        <div class="keep-grid">
+          {% for item in audit.what_to_keep %}
+          <div class="keep-item">{{ item }}</div>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="plan">
+      <div class="section__inner">
+        <header class="section__head">
+          <h2>Seven-day action plan</h2>
+          <p>One week. Dependency order. No ninety-day strategy document.</p>
+        </header>
+        <ol class="plan">
+          {% for item in audit.seven_day_plan %}
+          <li><strong>Day {{ loop.index }}</strong><span>{{ item }}</span></li>
+          {% endfor %}
+        </ol>
+      </div>
+    </section>
+
+    <section class="section section--tint" id="method">
+      <div class="section__inner">
+        <header class="section__head">
+          <h2>Evidence boundary</h2>
+          <p>This report distinguishes what the MVP measured from what still needs an agent, browser, analytics, or platform test.</p>
+        </header>
+        <div class="method">
+          <div>
+            <h3>Brand cues</h3>
+            <p>{{ audit.brand.source }}</p>
+            {% if audit.brand.display_font or audit.brand.body_font %}<p>Detected fonts: {{ audit.brand.display_font or "not detected" }} / {{ audit.brand.body_font or "not detected" }}</p>{% endif %}
+          </div>
+          <div>
+            <h3>Unmeasured visibility</h3>
+            <ul>{% for item in audit.visibility.unmeasured %}<li>{{ item }}</li>{% endfor %}</ul>
+          </div>
+          <div>
+            <h3>Limitations</h3>
+            <ul>{% for item in audit.limitations %}<li>{{ item }}</li>{% endfor %}</ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="next-step">
+      <div class="section__inner">
+        <header class="section__head">
+          <h2>What happens next</h2>
+          {% if audit.mode in ["conversion", "full"] and audit.conversion.rewrite_eligible %}
+          <p>The upstream decisions are clear enough to move into a complete section-by-section copy rewrite. Review this audit in the editable Google Doc before final PDF delivery.</p>
+          {% else %}
+          <p>Resolve the upstream decisions identified in this audit first. Once they are clear, the next step is a complete section-by-section copy rewrite, followed by implementation only if needed.</p>
+          {% endif %}
+        </header>
+      </div>
+    </section>
+  </main>
+
+  <footer class="report-footer">
+    <strong>{{ audit.brand.name }}</strong>
+    <small>Website Audit · Evidence engine by Edgewise · {{ audit.generated_at[:10] }}</small>
+  </footer>
+
+  <script>
+    function downloadSelf() {
+      const source = "<!doctype html>\n" + document.documentElement.outerHTML;
+      const blob = new Blob([source], { type: "text/html;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "{{ report_id }}.html";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.setTimeout(() => URL.revokeObjectURL(link.href), 500);
+    }
+  </script>
+</body>
+</html>

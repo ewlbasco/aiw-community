@@ -10,7 +10,7 @@ import sys
 
 
 ROOT = Path(__file__).resolve().parent.parent
-SKILLS = ("website-audit", "conversion-engine", "visibility-audit", "qa-audit", "creative-director")
+SKILLS = ("website-audit", "conversion-engine", "visibility-audit", "qa-audit", "creative-director", "geo-implementation", "positioning-clarity-check")
 REQUIRED_EVAL_FILES = (
     "routing-cases.json",
     "conversion-layer-cases.json",
@@ -94,7 +94,7 @@ def main() -> int:
     router = (ROOT / "skills" / "website-audit" / "SKILL.md").read_text(
         encoding="utf-8"
     )
-    for dependency in ("conversion-engine", "visibility-audit"):
+    for dependency in ("conversion-engine", "visibility-audit", "geo-implementation", "positioning-clarity-check", "hallmark"):
         if dependency not in router:
             failures.append(f"website-audit does not name {dependency}")
 
@@ -156,7 +156,7 @@ def main() -> int:
             failures.append(f"conversion-engine is missing required phrase: {phrase}")
 
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    if not re.search(r"Freshness check:\s*2026-07-01", readme):
+    if not re.search(r"Freshness check:\s*2026-07-0[1-9]", readme):
         failures.append("README is missing the current freshness check")
 
     if failures:

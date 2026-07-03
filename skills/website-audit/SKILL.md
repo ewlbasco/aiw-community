@@ -11,6 +11,12 @@ Use this skill as the entry point. Route specialist work to:
   funnel, rewrite, and mockup decisions.
 - `visibility-audit` for SEO, GEO, AEO, AI search readiness, crawlability,
   metadata, schema, accessibility, and performance.
+- `geo-implementation` for fixing GEO issues detected by visibility-audit
+  (llms.txt, robots.txt AI crawlers, answer capsules, entity signals).
+- `positioning-clarity-check` as a pre-audit intake gate when positioning
+  uncertainty is suspected.
+- `hallmark` for visual design quality audit, brand coherence, and
+  anti-AI-slop review.
 
 Do not create a third audit methodology inside this router.
 
@@ -56,6 +62,7 @@ Label these items `not measured`.
 | Weak headline, vague offer, weak CTA, no proof, poor page flow | `conversion-engine` |
 | SEO, GEO, AEO, AI search, metadata, schema, crawlability | `visibility-audit` |
 | Accessibility, performance, robots.txt, or sitemap | `visibility-audit` |
+| Visual design quality, brand coherence, anti-AI-slop review | `hallmark` for `audit` or `study` |
 | Mixed symptoms or "audit everything" | Run both and merge |
 | Copy rewrite | Audit first, then paid `conversion-engine` rewrite |
 | Redesign or rebuild | Audit first, then recommend a scoped service call |
@@ -78,7 +85,10 @@ Classify the primary bottleneck as:
    visibility findings.
 5. Deduplicate findings by root cause.
 6. Prioritize fixes by expected impact, confidence, and effort.
-7. Return one concrete next step and a seven-day action plan.
+7. Before delivery, run Knowledge Gap detection: identify what is absent
+   from the analysis, what competitors are not covering, and what the
+   audience needs but is not being told. Add a "Knowledge Gaps" section.
+8. Return one concrete next step and a seven-day action plan.
 
 ## Improvement Loop
 

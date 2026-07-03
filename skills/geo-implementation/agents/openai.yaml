@@ -1,0 +1,10 @@
+name: GEO Implementation
+description: Fix GEO issues detected by visibility-audit
+instructions:
+  - Read visibility-audit output before starting
+  - Generate llms.txt at domain root
+  - Configure robots.txt for AI crawlers
+  - Create answer capsules for key buyer questions
+  - Add entity signals to schema
+  - Structure content for AI search readiness
+model: gpt-4o

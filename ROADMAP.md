@@ -1,7 +1,7 @@
 # ROADMAP — Website Audit System
 
 > **Repo:** `github.com/ewlbasco/aiw-community`
-> **Updated:** 2026-07-01
+> **Updated:** 2026-07-03
 
 ---
 
@@ -36,15 +36,20 @@ Two new skills built and shipped:
 
 ---
 
-## Future — Under Review
+## Shipped Since Last Update
 
-### Positioning framework
-Strategic layer before audit: checks if business positioning is clear before touching messaging or design.
-*Status: concept — needs Cynthia to decide if this fits the package.*
+### Positioning clarity check ✅
+Pre-audit intake gate: detects unclear positioning before running the full audit.
+Blocks the audit when 2+ clarity gaps are found.
 
-### GEO implementation layer
-Extends visibility-audit from detection to fixing (llms.txt, AI crawler config, answer capsules).
-*Status: concept — needs Cynthia to decide if this fits the package.*
+### GEO implementation layer ✅
+Extends visibility-audit from detection to fixing: llms.txt generation, robots.txt AI crawler configuration, answer capsules, and entity signals.
+
+### Knowledge gap detection ✅
+Mandatory step before delivery: identifies what is absent from the analysis and flags competitive blind spots.
+
+### Design quality gate ✅
+Routes to hallmark for visual audit, brand coherence, and anti-AI-slop review.
 
 ---
 
