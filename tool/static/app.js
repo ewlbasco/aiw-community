@@ -10,7 +10,6 @@ const errorState = document.querySelector("#error-state");
 const errorMessage = document.querySelector("#error-message");
 const openReport = document.querySelector("#open-report");
 const downloadReport = document.querySelector("#download-report");
-const downloadDocx = document.querySelector("#download-docx");
 const openSpecialist = document.querySelector("#open-specialist");
 const newAudit = document.querySelector("#new-audit");
 
@@ -96,7 +95,6 @@ form.addEventListener("submit", async (event) => {
 
     openReport.href = data.report_url;
     downloadReport.href = data.download_url;
-    downloadDocx.href = data.docx_url;
     openSpecialist.href = data.specialist_url;
     document.querySelector("#result-title").textContent = `${data.brand} audit complete`;
     document.querySelector("#result-subtitle").textContent = `${data.mode} audit · ${data.url}`;

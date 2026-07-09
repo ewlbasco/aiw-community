@@ -834,6 +834,7 @@ class AuditEngine:
                 ),
                 "",
             )
+        hero_url = re.sub(r"['\"()]", "", hero_url)
 
         button_radius = ""
         radius_match = re.search(
@@ -1351,12 +1352,13 @@ class AuditEngine:
         score = 100
         design_source = "visual-creator-html (5 design basics + Modern Luxe Rules) and hallmark (anti-AI-slop)"
 
+        brand = self.extract_brand(pages, css_text)
         font_count = 0
-        if self.extract_brand(pages, css_text).get("display_font"):
+        if brand.get("display_font"):
             font_count += 1
-        if self.extract_brand(pages, css_text).get("body_font"):
+        if brand.get("body_font"):
             font_count += 1
-        detected_fonts = self.extract_brand(pages, css_text).get("fonts", [])
+        detected_fonts = brand.get("fonts", [])
         if len(detected_fonts) > 2:
             score -= 15
             findings.append(

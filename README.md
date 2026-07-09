@@ -3,7 +3,7 @@ type: docs
 project: Conversion-Visibility
 source: session
 created: 2026-06-28
-updated: 2026-07-03
+updated: 2026-07-09
 summary: Publishable skill package for routing website problems between conversion and visibility diagnosis.
 tags: [website-audit, conversion, visibility, agent-skill]
 status: active
@@ -15,12 +15,13 @@ related: [projects/conversion-visibility/CURRENT-DIRECTION.md]
 Diagnose whether a website is difficult to find, difficult to understand, or
 difficult to convert, then identify what should be fixed first.
 
-**Release status:** publishable skill package.
+**Release status:** publishable skill package + self-serve web tool.
 
-**Recommended GitHub home:** `aiw-community`
+**GitHub:** `conversion-visibility-audit`
 
-**Tool status:** the self-serve web app is being built separately. This
-repository is the skill version people can use right now inside their agent.
+**Tool status:** the self-serve web app runs locally (Python + Flask).
+Reports are **editable HTML** — click Edit, change the text, Save to
+localStorage, Export when ready. No PowerPoint or Word needed.
 
 Freshness check: 2026-07-03. A current GitHub benchmark found broad SEO skill
 suites, but no stronger equivalent combining evidence-gated conversion and
@@ -121,8 +122,8 @@ cp -R skills/creative-director ~/.agents/skills/research/
 Full flow:
 
 ```bash
-git clone <repo-url>
-cd aiw-community
+git clone https://github.com/ewlbasco/conversion-visibility-audit.git
+cd conversion-visibility-audit
 ./install.sh
 ```
 
@@ -186,10 +187,12 @@ browser, crawl, or measurement tools.
 The skill can produce:
 
 - a plain audit in chat or Markdown
-- a client-facing HTML presentation
-- an editable Word or Google Doc version before final PDF
+- a client-facing HTML presentation (editable inline)
+- a detailed specialist report (editable inline)
 
-PDF is an export, not the working format.
+Both HTML reports support **Edit → Save → Export** flow. No PowerPoint
+or Word needed. Just click Edit, change the text, save to localStorage,
+and Export HTML when ready.
 
 ## Validate
 

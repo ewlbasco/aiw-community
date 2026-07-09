@@ -25,6 +25,19 @@
     body { background: var(--paper); color: var(--ink); font-family: var(--body); line-height: 1.5; }
     a, button { -webkit-tap-highlight-color: transparent; }
     a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+    [contenteditable]:focus { outline: 2px dashed var(--accent); outline-offset: 4px; border-radius: 2px; }
+    .is-editing [contenteditable] { cursor: text; }
+    .toolbar { display: flex; gap: 6px; align-items: center; }
+    .toolbar .button--edit { background: var(--accent); color: var(--white); border-color: var(--accent); }
+    .toolbar .button--edit.is-active { background: var(--ink); color: var(--white); border-color: var(--ink); }
+    .toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--ink); color: var(--white); padding: 10px 20px;
+      border-radius: 6px; font-size: .82rem; z-index: 100;
+      opacity: 0; transition: opacity .25s;
+      pointer-events: none;
+    }
+    .toast.show { opacity: 1; }
 
     .actions {
       align-items: center;
@@ -163,14 +176,17 @@
   </style>
 </head>
 <body>
-  <nav class="actions" aria-label="Report actions">
+    <nav class="actions" aria-label="Report actions">
     <strong>{{ audit.brand.name }} website review</strong>
-    <div class="actions__links">
-      <a class="button button--primary" href="{{ report_id }}.pptx" download>Editable PowerPoint file</a>
-      <a class="button" href="{{ report_id }}-specialist.html">Detailed audit</a>
-      <button class="button" type="button" onclick="downloadSelf()">Download HTML</button>
+    <div class="toolbar">
+      <button class="button button--edit" type="button" id="toggle-edit" onclick="toggleEdit()">Edit</button>
+      <button class="button" type="button" onclick="saveEdits()">Save</button>
+      <button class="button" type="button" onclick="downloadSelf()">Export HTML</button>
+      <a class="button button--primary" href="{{ report_id }}.pptx" download>PowerPoint</a>
+      <a class="button" href="{{ report_id }}-specialist.html">Details</a>
     </div>
   </nav>
+  <div id="toast" class="toast"></div>
 
   <main>
     <header class="slide cover">
@@ -183,8 +199,8 @@
           <span>{{ audit.generated_at[:10] }}</span>
           <span>{{ audit.url }}</span>
         </div>
-        <h1>{{ audit.brand.name }}</h1>
-        <p class="lead">{{ audit.client_review.headline }}</p>
+        <h1 contenteditable="false">{{ audit.brand.name }}</h1>
+        <p class="lead" contenteditable="true">{{ audit.client_review.headline }}</p>
       </div>
     </header>
 
@@ -198,7 +214,7 @@
         <div class="statement__score">
           <div class="score">{{ audit.conversion.score }}</div>
           <div class="score-label">Current conversion readiness</div>
-          <p class="score-note">This is a directional score. It shows how clearly the site sells the next step today.</p>
+          <p class="score-note" contenteditable="true">This is a directional score. It shows how clearly the site sells the next step today.</p>
         </div>
       </div>
     </section>
@@ -349,15 +365,67 @@
   </main>
 
   <script>
+    var STORAGE_KEY = "report_edits_{{ report_id }}";
+
+    function toggleEdit() {
+      var btn = document.getElementById("toggle-edit");
+      var isEditing = document.body.classList.toggle("is-editing");
+      var els = document.querySelectorAll("[contenteditable]");
+      for (var i = 0; i < els.length; i++) {
+        els[i].setAttribute("contenteditable", isEditing ? "true" : "false");
+      }
+      btn.textContent = isEditing ? "Done editing" : "Edit";
+      btn.classList.toggle("is-active", isEditing);
+      if (!isEditing) saveEdits();
+    }
+
+    function saveEdits() {
+      var data = {};
+      var els = document.querySelectorAll("[contenteditable]");
+      for (var i = 0; i < els.length; i++) {
+        var key = els[i].tagName + "-" + i + "-" + (els[i].className || "x");
+        data[key] = els[i].innerHTML;
+      }
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        showToast("Saved");
+      } catch (e) {
+        showToast("Could not save");
+      }
+    }
+
+    function loadEdits() {
+      try {
+        var raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return;
+        var data = JSON.parse(raw);
+        var els = document.querySelectorAll("[contenteditable]");
+        for (var i = 0; i < els.length; i++) {
+          var key = els[i].tagName + "-" + i + "-" + (els[i].className || "x");
+          if (data[key]) els[i].innerHTML = data[key];
+        }
+      } catch (e) {}
+    }
+
     function downloadSelf() {
-      const source = "<!doctype html>\n" + document.documentElement.outerHTML;
-      const blob = new Blob([source], { type: "text/html;charset=utf-8" });
-      const link = document.createElement("a");
+      var source = "<!doctype html>\n" + document.documentElement.outerHTML;
+      var blob = new Blob([source], { type: "text/html;charset=utf-8" });
+      var link = document.createElement("a");
       link.href = URL.createObjectURL(blob);
       link.download = "{{ report_id }}.html";
       link.click();
-      URL.revokeObjectURL(link.href);
+      window.setTimeout(function() { URL.revokeObjectURL(link.href); }, 500);
     }
+
+    function showToast(msg) {
+      var t = document.getElementById("toast");
+      if (!t) return;
+      t.textContent = msg;
+      t.classList.add("show");
+      window.setTimeout(function() { t.classList.remove("show"); }, 2000);
+    }
+
+    loadEdits();
   </script>
 </body>
 </html>
