@@ -44,8 +44,8 @@ Open `http://127.0.0.1:8765`.
 
 ## Live demos
 
-- [Key West Kate audit](https://vercel-share-lime.vercel.app) — full audit on a real site
-- [KarvaTech audit](http://127.0.0.1:8765/reports/karvatech-portfolio-vercel-app-index.html) — run locally
+- [Demo audit on Vercel](https://vercel-share-lime.vercel.app) — full audit example
+- [Run locally](http://127.0.0.1:8765) — run your own audit on any URL
 
 ## Requirements
 
