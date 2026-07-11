@@ -1,0 +1,24 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Tool output
+tool/validation/*.pdf
+tool/validation/downloaded-report.html
+
+# Content — never commit drafts, posts, or marketing to tool repos
+*-draft-*
+*-linkedin-*
+linkedin-*
+*.draft.*
+
+# Build artifacts
+output/
+dist/

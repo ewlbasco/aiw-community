@@ -20,7 +20,7 @@ import requests
 MAX_RESPONSE_BYTES = 2_000_000
 MAX_PAGES = 8
 REQUEST_TIMEOUT = (4, 12)
-USER_AGENT = "EdgewiseWebsiteAuditMVP/0.1 (+local evidence tool)"
+USER_AGENT = "WebsiteAudit/0.1 (+local evidence tool)"
 
 PRICE_RE = re.compile(r"(?<!\w)(?:[$€£]\s?\d[\d,.]*|\d[\d,.]*\s?(?:USD|EUR|GBP))(?!\w)", re.I)
 HEX_RE = re.compile(r"(?<![\w-])#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})(?![0-9a-fA-F])")

@@ -262,6 +262,6 @@ def render_editable_pptx(audit: dict, report_id: str) -> Path:
 
     prs.core_properties.title = f"{audit['brand']['name']} Website Review"
     prs.core_properties.subject = "Editable website audit deck"
-    prs.core_properties.author = "Edgewise"
+    prs.core_properties.author = "WebsiteAudit"
     prs.save(path)
     return path

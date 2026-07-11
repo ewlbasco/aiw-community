@@ -21,7 +21,7 @@ MAX_REQUEST_BYTES = 32_000
 
 
 class AuditRequestHandler(SimpleHTTPRequestHandler):
-    server_version = "EdgewiseWebsiteAuditMVP/0.1"
+    server_version = "WebsiteAudit/0.1"
 
     def log_message(self, format_string: str, *args: object) -> None:
         sys.stdout.write(f"[audit-mvp] {self.address_string()} {format_string % args}\n")

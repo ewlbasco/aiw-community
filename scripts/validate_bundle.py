@@ -21,9 +21,6 @@ FORBIDDEN_TEXT = (
     "/Users/",
     "EDGEWISE_WORKSPACE_MASTER",
     "license: Proprietary",
-    "Cynthia",
-    "cynthiadn",
-    "Edgewise",
 )
 
 

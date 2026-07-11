@@ -257,7 +257,7 @@ def render_editable_docx(audit: dict, report_id: str) -> Path:
 
     doc.core_properties.title = f"{audit['brand']['name']} Website Review"
     doc.core_properties.subject = "Editable website audit brief"
-    doc.core_properties.author = "Edgewise"
+    doc.core_properties.author = "WebsiteAudit"
     doc.core_properties.keywords = "website audit, conversion, visibility"
     doc.save(path)
     return path
