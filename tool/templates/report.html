@@ -379,63 +379,47 @@
       *, *::before, *::after { animation-duration: 1ms !important; transition-duration: 1ms !important; }
     }
 
-    [contenteditable]:focus { outline: 2px dashed var(--color-accent); outline-offset: 4px; border-radius: 2px; }
-    .is-editing [contenteditable] { cursor: text; }
-    .toolbar { display: flex; gap: 6px; align-items: center; }
-    .toolbar .report-button--edit { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-ink); }
-    .toolbar .report-button--edit.is-active { background: var(--color-ink); color: var(--color-white); border-color: var(--color-ink); }
     .toast {
-      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-      background: var(--color-ink); color: var(--color-white); padding: 10px 20px;
-      border-radius: 6px; font-size: .82rem; z-index: 100;
-      opacity: 0; transition: opacity .25s;
+      align-items: center;
+      background: var(--color-ink);
+      border-radius: 8px;
+      bottom: 24px;
+      color: var(--color-white);
+      display: flex;
+      font: 700 var(--text-xs)/1 var(--font-body);
+      left: 50%;
+      opacity: 0;
+      padding: 12px 24px;
       pointer-events: none;
+      position: fixed;
+      transform: translateX(-50%);
+      transition: opacity .25s;
+      z-index: 10000;
     }
     .toast.show { opacity: 1; }
+    .is-editing [contenteditable] { cursor: text; transition: all .12s; border-radius: 3px; padding: 2px 4px; margin: -2px -4px; min-height: 1.2em; }
+    .is-editing [contenteditable]:hover { outline: 2px dashed var(--color-accent); background: rgba(0,0,0,0.02); }
+    .is-editing [contenteditable]:focus { outline: 2px solid var(--color-accent); background: rgba(0,0,0,0.04); }
 
     @media print {
-      @page { margin: 15mm 18mm; size: A4; }
-      body { background: var(--color-white); font-size: 9pt; line-height: 1.45; }
-      .report-nav, .toast { display: none; }
-      .cover { min-height: auto; padding: 30mm 18mm 20mm; print-color-adjust: exact; }
-      .cover h1 { font-size: 28pt; max-width: 20ch; }
-      .cover__summary { font-size: 10pt; margin-top: 10px; }
-      .cover__meta { font-size: 7pt; margin-bottom: 14px; }
-      .section { padding: 8mm 0; }
-      .section__head { margin-bottom: 6mm; gap: 4mm; }
-      .section__head h2 { font-size: 16pt; max-width: 30ch; }
-      .section__head p { font-size: 9pt; }
-      .score-block { min-height: auto; padding: 5mm 0 3mm; }
-      .score-block__value { font-size: 24pt; }
-      .score-grid { gap: 6mm; }
-      .layer-row { padding: 3mm 0; font-size: 8pt; }
-      .layer-row__bar { height: 5px; }
-      .priority { padding: 3mm 0; gap: 4mm; }
-      .priority h3 { font-size: 10pt; }
-      .priority__body { gap: 4mm; }
-      .priority p, .finding dd, .finding dt { font-size: 8.5pt; }
-      .finding { padding-top: 3mm; gap: 4mm; }
-      .finding h3 { font-size: 11pt; }
-      .keep-item { font-size: 9pt; padding-top: 2mm; }
-      .keep-grid { gap: 4mm; }
-      .plan li { padding: 2mm 0; gap: 4mm; font-size: 9pt; }
-      .report-footer { padding: 6mm 18mm; min-height: auto; }
-      .report-footer strong { font-size: 10pt; }
+      @page { margin: 14mm; size: A4; }
+      body { background: var(--color-white); }
+      .report-nav { display: none; }
+      .cover { min-height: 250mm; break-after: page; print-color-adjust: exact; }
+      .section { break-before: page; padding: 18mm 0; }
+      .finding, .priority, .score-block { break-inside: avoid; }
+      .report-footer { break-before: page; min-height: 80mm; }
     }
   </style>
 </head>
 <body>
   <nav class="report-nav" aria-label="Report actions">
     <div class="report-nav__brand">{{ audit.brand.name }} detailed audit</div>
-    <div class="report-nav__actions toolbar">
-      <button class="report-button report-button--edit" type="button" id="toggle-edit" onclick="toggleEdit()">Edit</button>
-      <button class="report-button" type="button" onclick="saveEdits()">Save</button>
-      <a class="report-button" href="/api/report/{{ report_id }}/pdf/slide" download>PDF Slide Deck</a>
-      <a class="report-button" href="/api/report/{{ report_id }}/pdf/document" download>PDF Document</a>
-      <button class="report-button" type="button" onclick="downloadSelf()">Export HTML</button>
+    <div class="report-nav__actions">
+      <button class="report-button" type="button" id="toggle-edit" onclick="toggleEdit()" style="background:transparent;border-color:var(--color-ink);color:var(--color-ink)">Edit</button>
+      <button class="report-button" type="button" onclick="downloadSelf()">Download HTML</button>
     </div>
   </nav>
-  <div id="toast" class="toast"></div>
 
   <main>
     <header class="cover">
@@ -445,8 +429,8 @@
           <span>{{ audit.generated_at[:10] }}</span>
           <span>{{ audit.url }}</span>
         </div>
-        <h1 contenteditable="false">{{ audit.brand.name }}</h1>
-        <p class="cover__summary" contenteditable="true">{{ audit.executive_summary }}</p>
+        <h1>{{ audit.brand.name }}</h1>
+        <p class="cover__summary">{{ audit.executive_summary }}</p>
         {% if audit.desired_outcome %}
         <p class="cover__summary"><strong>Desired outcome supplied:</strong> {{ audit.desired_outcome }}</p>
         {% endif %}
@@ -588,6 +572,33 @@
     </section>
     {% endif %}
 
+    {% if audit.design and audit.design.findings %}
+    <section class="section" id="design-findings">
+      <div class="section__inner">
+        <header class="section__head">
+          <h2>Design diagnosis</h2>
+          <p>Heuristic scan of public HTML and CSS. A rendered visual review is required for a complete assessment. Score: {{ audit.design.score }}/100.</p>
+        </header>
+        <div class="finding-list">
+          {% for finding in audit.design.findings %}
+          <article class="finding">
+            <div>
+              <h3>{{ finding.title }}</h3>
+              <span class="finding__severity">{{ finding.category }} · {{ finding.severity }}</span>
+            </div>
+            <dl>
+              <div><dt>Location</dt><dd>{{ finding.location }}</dd></div>
+              <div><dt>Exact evidence</dt><dd>{{ finding.evidence }}</dd></div>
+              <div><dt>Visitor impact</dt><dd>{{ finding.impact }}</dd></div>
+              <div><dt>Exact fix</dt><dd>{{ finding.fix }}</dd></div>
+            </dl>
+          </article>
+          {% endfor %}
+        </div>
+      </div>
+    </section>
+    {% endif %}
+
     {% if audit.opportunities %}
     <section class="section section--tint" id="opportunities">
       <div class="section__inner">
@@ -680,9 +691,11 @@
     </section>
   </main>
 
+  <div class="toast" id="toast" aria-live="polite"></div>
+
   <footer class="report-footer">
     <strong>{{ audit.brand.name }}</strong>
-    <small>Website Audit · {{ audit.generated_at[:10] }}</small>
+    <small>Website Audit · Evidence engine by Edgewise · {{ audit.generated_at[:10] }}</small>
   </footer>
 
   <script>
@@ -691,13 +704,21 @@
     function toggleEdit() {
       var btn = document.getElementById("toggle-edit");
       var isEditing = document.body.classList.toggle("is-editing");
-      var els = document.querySelectorAll("main h1, main h2, main h3, main p, main li, main blockquote, main strong, main span, main dt, main dd");
+      var els = document.querySelectorAll("main h1, main h2, main h3, main p, main li, main blockquote, main strong, main span, main dt, main dd, .cover__meta span, .kicker");
       for (var i = 0; i < els.length; i++) {
         if (els[i].closest(".report-nav")) continue;
         els[i].setAttribute("contenteditable", isEditing ? "true" : "false");
       }
       btn.textContent = isEditing ? "Done editing" : "Edit";
-      btn.classList.toggle("is-active", isEditing);
+      if (isEditing) {
+        btn.style.background = "var(--color-ink)";
+        btn.style.color = "var(--color-white)";
+        btn.style.borderColor = "var(--color-ink)";
+      } else {
+        btn.style.background = "transparent";
+        btn.style.color = "var(--color-ink)";
+        btn.style.borderColor = "var(--color-ink)";
+      }
       if (!isEditing) saveEdits();
     }
 
@@ -705,8 +726,7 @@
       var data = {};
       var els = document.querySelectorAll("[contenteditable]");
       for (var i = 0; i < els.length; i++) {
-        var key = els[i].tagName + "-" + i;
-        data[key] = els[i].innerHTML;
+        data[els[i].tagName + "-" + i] = els[i].innerHTML;
       }
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));

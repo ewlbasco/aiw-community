@@ -76,25 +76,6 @@ class AuditRequestHandler(SimpleHTTPRequestHandler):
             report_name = Path(path).name
             self.send_file(OUTPUT_DIR / report_name, "text/html; charset=utf-8")
             return
-        if path.startswith("/reports/") and path.endswith(".pptx"):
-            report_name = Path(path).name
-            self.send_file(
-                OUTPUT_DIR / report_name,
-                "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                attachment=True,
-            )
-            return
-        if path.startswith("/api/report/") and path.endswith("/pptx"):
-            report_id = path.removeprefix("/api/report/").removesuffix("/pptx").strip("/")
-            if not report_id or slugify(report_id) != report_id:
-                self.send_error(HTTPStatus.BAD_REQUEST)
-                return
-            self.send_file(
-                OUTPUT_DIR / f"{report_id}.pptx",
-                "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-                attachment=True,
-            )
-            return
         if path.startswith("/api/report/") and path.endswith("/download"):
             report_id = path.removeprefix("/api/report/").removesuffix("/download").strip("/")
             if not report_id or slugify(report_id) != report_id:
@@ -186,7 +167,6 @@ class AuditRequestHandler(SimpleHTTPRequestHandler):
                 "report_id": report_id,
                 "report_url": f"/reports/{report_id}.html",
                 "download_url": f"/api/report/{report_id}/download",
-                "pptx_url": f"/api/report/{report_id}/pptx",
                 "specialist_url": f"/reports/{report_id}-specialist.html",
                 "index_url": f"/reports/{slug}-index.html",
                 "brand": audit["brand"]["name"],

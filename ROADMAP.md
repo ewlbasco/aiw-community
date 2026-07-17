@@ -1,7 +1,7 @@
 # ROADMAP — Website Audit System
 
 > **Repo:** `github.com/ewlbasco/conversion-visibility-audit`
-> **Updated:** 2026-07-03
+> **Updated:** 2026-07-17
 
 ---
 
@@ -21,7 +21,10 @@ All three ship as portable agent skills (MIT).
 Build a web app version of the audit system:
 - Paste URL or copy → choose audit type → get results
 - No agent setup required
-- Demo on Vercel
+- Local demo first. Do not put client audit outputs or reports with real client
+  data on Vercel, Netlify, GitHub Pages, or any public host. Public demo only
+  after the data is sanitized, client examples are removed or fictionalized,
+  and Cynthia explicitly approves the deployment.
 
 Later: agent system for agencies that incorporates audit checks directly into new builds.
 
@@ -42,8 +45,12 @@ Two new skills built and shipped:
 Pre-audit intake gate: detects unclear positioning before running the full audit.
 Blocks the audit when 2+ clarity gaps are found.
 
-### GEO implementation layer ✅
-Extends visibility-audit from detection to fixing: llms.txt generation, robots.txt AI crawler configuration, answer capsules, and entity signals.
+### GEO implementation layer ⚠️
+Extends visibility-audit from detection to fixing at the skill/spec level:
+llms.txt generation, robots.txt AI crawler configuration, answer capsules, and
+entity signals. The helper scripts are not active executable code in this
+package yet. They should not be described as available until they exist, run in
+the workflow, and are covered by validation.
 
 ### Knowledge gap detection ✅
 Mandatory step before delivery: identifies what is absent from the analysis and flags competitive blind spots.

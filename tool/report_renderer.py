@@ -36,8 +36,6 @@ def render_report(audit: dict, report_id: str | None = None) -> tuple[str, Path]
 
 
 def render_report_bundle(audit: dict, report_id: str | None = None) -> dict[str, Path | str]:
-    from pptx_renderer import render_editable_pptx
-
     report_id, client_path = render_report(audit, report_id=report_id)
     environment = Environment(
         loader=FileSystemLoader(TEMPLATE_DIR),
@@ -48,7 +46,6 @@ def render_report_bundle(audit: dict, report_id: str | None = None) -> dict[str,
     specialist = environment.get_template("report.html").render(audit=audit, report_id=report_id)
     specialist_path = OUTPUT_DIR / f"{report_id}-specialist.html"
     specialist_path.write_text(specialist, encoding="utf-8")
-    pptx_path = render_editable_pptx(audit, report_id)
 
     slug = slugify(audit.get("url", ""))
     index_html = environment.get_template("landing.html").render(
@@ -66,6 +63,5 @@ def render_report_bundle(audit: dict, report_id: str | None = None) -> dict[str,
         "report_id": report_id,
         "client_html": client_path,
         "specialist_html": specialist_path,
-        "pptx": pptx_path,
         "index_html": index_path,
     }

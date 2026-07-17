@@ -25,7 +25,6 @@
     body { background: var(--paper); color: var(--ink); font-family: var(--body); line-height: 1.5; }
     a, button { -webkit-tap-highlight-color: transparent; }
     a:focus-visible, button:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-    [contenteditable]:focus { outline: 2px dashed var(--accent); outline-offset: 4px; border-radius: 2px; }
 
     .actions {
       align-items: center;
@@ -48,23 +47,15 @@
       border: 1px solid var(--ink);
       border-radius: 4px;
       color: var(--ink);
-      cursor: pointer;
       display: inline-flex;
-      font-family: var(--body);
       font-size: .75rem;
       font-weight: 700;
       justify-content: center;
       min-height: 36px;
       padding: 0 12px;
       text-decoration: none;
-      transition: background .15s, color .15s;
     }
-    .button:hover { background: var(--ink); color: var(--white); }
     .button--primary { background: var(--ink); color: var(--white); }
-    .button--primary:hover { opacity: .88; }
-    .button--edit { border-color: var(--accent); color: var(--accent); }
-    .button--edit.is-active { background: var(--accent); border-color: var(--accent); color: var(--white); }
-    .button--edit.is-active:hover { opacity: .88; }
 
     .slide {
       border-bottom: 1px solid var(--rule);
@@ -116,6 +107,9 @@
     .list { list-style: none; margin: 0; padding: 0; }
     .list li { border-top: 1px solid var(--rule); padding: 18px 0; }
     .list p { color: var(--muted); }
+    .positive h3, .risk h3 { color: var(--ink); }
+    .slide--dark .positive h3,
+    .slide--dark .risk h3 { color: var(--white); }
 
     .quote {
       border-left: 6px solid var(--accent);
@@ -143,20 +137,10 @@
     .slide--dark { background: var(--ink); color: var(--white); }
     .slide--dark .lead, .slide--dark .list p { color: rgba(255,255,255,.7); }
     .slide--dark .list li { border-color: rgba(255,255,255,.22); }
-    .slide--dark .score-row { border-color: rgba(255,255,255,.22); }
-    .slide--dark .score-row p { color: rgba(255,255,255,.65); }
     .slide--soft { background: var(--soft); }
-    .next-step { background: var(--ink); color: var(--white); }
-    .next-step .lead { color: rgba(255,255,255,.75); }
+    .next-step { background: var(--accent); color: var(--white); }
+    .next-step .lead { color: rgba(255,255,255,.84); }
     .next-step h2 { max-width: 18ch; }
-
-    .toast {
-      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
-      background: var(--ink); color: var(--white); padding: 9px 18px;
-      border-radius: 6px; font-size: .8rem; z-index: 100;
-      opacity: 0; transition: opacity .25s; pointer-events: none;
-    }
-    .toast.show { opacity: 1; }
 
     @media (max-width: 800px) {
       .statement, .columns { grid-template-columns: minmax(0, 1fr); }
@@ -172,13 +156,33 @@
       h1 { font-size: clamp(2.7rem, 16vw, 4.7rem); }
       h2 { font-size: clamp(2.2rem, 12vw, 3.5rem); }
     }
+    .toast {
+      align-items: center;
+      background: var(--ink);
+      border-radius: 8px;
+      bottom: 24px;
+      color: var(--white);
+      display: flex;
+      font-size: .78rem;
+      font-weight: 700;
+      left: 50%;
+      opacity: 0;
+      padding: 12px 24px;
+      pointer-events: none;
+      position: fixed;
+      transform: translateX(-50%);
+      transition: opacity .25s;
+      z-index: 10000;
+    }
+    .toast.show { opacity: 1; }
+    .is-editing [contenteditable] { cursor: text; transition: all .12s; border-radius: 3px; padding: 2px 4px; margin: -2px -4px; min-height: 1.2em; }
+    .is-editing [contenteditable]:hover { outline: 2px dashed var(--accent); background: rgba(0,0,0,0.02); }
+    .is-editing [contenteditable]:focus { outline: 2px solid var(--accent); background: rgba(0,0,0,0.04); }
+
     @media print {
-      @page { margin: 0; size: landscape; }
-      body { background: var(--white); }
       .actions { display: none; }
       .toast { display: none; }
       .slide { break-after: page; min-height: 100vh; }
-      .cover { min-height: 100vh; }
     }
   </style>
 </head>
@@ -186,14 +190,11 @@
   <nav class="actions" aria-label="Report actions">
     <strong>{{ audit.brand.name }} website review</strong>
     <div class="actions__links">
-      <button class="button button--edit" type="button" id="toggle-edit" onclick="toggleEdit()">Edit</button>
-      <button class="button" type="button" onclick="saveEdits()">Save</button>
-      <a class="button" href="/api/report/{{ report_id }}/pdf/slide" download>PDF Slide Deck</a>
-      <a class="button" href="/api/report/{{ report_id }}/pdf/document" download>PDF Document</a>
-      <button class="button button--primary" type="button" onclick="downloadSelf()">Export HTML</button>
+      <button class="button" type="button" id="toggle-edit" onclick="toggleEdit()">Edit</button>
+      <a class="button" href="{{ report_id }}-specialist.html">Detailed audit</a>
+      <button class="button" type="button" onclick="downloadSelf()">Download HTML</button>
     </div>
   </nav>
-  <div id="toast" class="toast"></div>
 
   <main>
     <header class="slide cover">
@@ -226,78 +227,96 @@
       </div>
     </section>
 
-    {% if audit.client_review.strengths %}
     <section class="slide slide--dark">
       <div class="slide__inner">
         <p class="kicker">What already works</p>
         <h2>Keep the parts that help people understand the business.</h2>
         <ul class="list columns">
           {% for item in audit.client_review.strengths %}
-          <li><h3>{{ item }}</h3></li>
+          <li class="positive"><h3>{{ item }}</h3></li>
           {% endfor %}
         </ul>
       </div>
     </section>
-    {% endif %}
 
-    {% if audit.client_review.visitor_view %}
     <section class="slide slide--soft">
       <div class="slide__inner">
         <p class="kicker">What a visitor may think</p>
         <h2>The website is clear at first. The buying decision gets harder later.</h2>
         <ul class="list columns">
           {% for item in audit.client_review.visitor_view %}
-          <li><h3>{{ item.title }}</h3><p>{{ item.text }}</p></li>
+          <li class="{{ item.tone }}"><h3>{{ item.title }}</h3><p>{{ item.text }}</p></li>
           {% endfor %}
         </ul>
       </div>
     </section>
-    {% endif %}
 
-    {% if audit.client_review.copy %}
     <section class="slide">
       <div class="slide__inner">
         <p class="kicker">Copy review</p>
         <h2>The message recognizes the problem. It needs more proof and fewer abstract words.</h2>
-        {% if audit.client_review.copy.quote %}
-        <blockquote class="quote">{{ audit.client_review.copy.quote }}</blockquote>
+        {% if audit.client_review["copy"].quote %}
+        <blockquote class="quote">“{{ audit.client_review["copy"].quote }}”</blockquote>
         {% endif %}
         <div class="columns">
-          {% if audit.client_review.copy.works %}
           <div>
             <h3>What works</h3>
             <ul class="list">
-              {% for item in audit.client_review.copy.works %}<li><p>{{ item }}</p></li>{% endfor %}
+              {% for item in audit.client_review["copy"].works %}<li class="positive"><p>{{ item }}</p></li>{% endfor %}
             </ul>
           </div>
-          {% endif %}
-          {% if audit.client_review.copy.risks %}
           <div>
             <h3>What weakens it</h3>
             <ul class="list">
-              {% for item in audit.client_review.copy.risks %}<li><p>{{ item }}</p></li>{% endfor %}
+              {% for item in audit.client_review["copy"].risks %}<li class="risk"><p>{{ item }}</p></li>{% endfor %}
             </ul>
           </div>
-          {% endif %}
         </div>
       </div>
     </section>
-    {% endif %}
 
-    {% if audit.client_review.design %}
+    {% if audit.design and audit.design.findings %}
     <section class="slide slide--soft">
       <div class="slide__inner">
         <p class="kicker">Design review</p>
-        <h2>The visual system is strong. The final judgment needs the rendered pages.</h2>
-        <div class="columns">
-          <div><h3>What the code shows</h3><p class="lead" style="margin-top:8px">{{ audit.client_review.design.works }}</p></div>
-          <div><h3>What still needs checking</h3><p class="lead" style="margin-top:8px">{{ audit.client_review.design.risk }}</p></div>
+        <h2>Automated visual scan reveals specific issues.</h2>
+        <div class="score-row" style="margin-top: 24px;">
+          <strong>Design score</strong>
+          <span class="score-row__value">{{ audit.design.score }}/100</span>
+          <p>{{ audit.design.note }}</p>
+        </div>
+        <div class="columns" style="margin-top: 32px;">
+          <div>
+            <h3>What the code shows</h3>
+            <ul class="list">
+              {% for finding in audit.design.findings %}
+              <li class="risk"><h3>{{ finding.title }}</h3><p>{{ finding.impact }} <strong>Fix:</strong> {{ finding.fix }}</p></li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div>
+            <h3>What still needs checking</h3>
+            <ul class="list">
+              <li class="risk"><h3>Rendered visual review</h3><p>{{ audit.client_review.design.risk }}</p></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    {% elif audit.client_review.design %}
+    <section class="slide slide--soft">
+      <div class="slide__inner">
+        <p class="kicker">Design review</p>
+        <h2>The visual system needs a rendered review before final judgment.</h2>
+        <div class="columns" style="margin-top: 32px;">
+          <div><h3>What the code shows</h3><p class="lead">{{ audit.client_review.design.works }}</p></div>
+          <div><h3>What still needs checking</h3><p class="lead">{{ audit.client_review.design.risk }}</p></div>
         </div>
       </div>
     </section>
     {% endif %}
 
-    {% if audit.mode in ["conversion", "full"] and audit.client_review.conversion_path %}
+    {% if audit.mode in ["conversion", "full"] %}
     <section class="slide">
       <div class="slide__inner">
         <p class="kicker">What would make this stronger</p>
@@ -320,10 +339,7 @@
       <div class="slide__inner">
         <p class="kicker">Search and AI visibility</p>
         <h2>Being easy to quote is not the same as being easy to understand.</h2>
-        {% if audit.client_review.visibility_explanation %}
         <p class="lead">{{ audit.client_review.visibility_explanation }}</p>
-        {% endif %}
-        {% if audit.client_review.visibility_path %}
         <div class="score-list">
           {% for item in audit.client_review.visibility_path %}
           <div class="score-row">
@@ -333,7 +349,6 @@
           </div>
           {% endfor %}
         </div>
-        {% endif %}
       </div>
     </section>
     {% endif %}
@@ -347,7 +362,7 @@
           {% for item in audit.opportunities[:4] %}
           <div>
             <h3>{{ item.title }}</h3>
-            <p class="lead" style="margin-top:8px">{{ item.why }}</p>
+            <p class="lead">{{ item.why }}</p>
             <ul class="list" style="margin-top: 20px;">
               <li><p><strong>Format:</strong> {{ item.format }}</p></li>
               <li><p><strong>Next step:</strong> {{ item.next_step }}</p></li>
@@ -359,7 +374,6 @@
     </section>
     {% endif %}
 
-    {% if audit.seven_day_plan %}
     <section class="slide slide--soft">
       <div class="slide__inner">
         <p class="kicker">First week</p>
@@ -371,7 +385,6 @@
         </ol>
       </div>
     </section>
-    {% endif %}
 
     <section class="slide next-step">
       <div class="slide__inner">
@@ -384,9 +397,12 @@
         {% if audit.client_review.main_next_step %}
         <p class="lead"><strong>Main next step:</strong> {{ audit.client_review.main_next_step }}</p>
         {% endif %}
+        <p class="lead">The editable Word file lets you change the wording before sharing or exporting a final PDF. The internal report keeps the technical evidence for the person doing the work.</p>
       </div>
     </section>
   </main>
+
+  <div class="toast" id="toast" aria-live="polite"></div>
 
   <script>
     var STORAGE_KEY = "report_edits_{{ report_id }}";
@@ -394,13 +410,13 @@
     function toggleEdit() {
       var btn = document.getElementById("toggle-edit");
       var isEditing = document.body.classList.toggle("is-editing");
-      var els = document.querySelectorAll("main h1, main h2, main h3, main p, main li, main blockquote, main strong, main span");
+      var els = document.querySelectorAll("main h1, main h2, main h3, main p, main li, main blockquote, main strong, main span, .cover__meta span, .kicker, .score, .score-label, .score-note, .score-row strong, .score-row p, .score-row__value, .lead");
       for (var i = 0; i < els.length; i++) {
         if (els[i].closest(".actions")) continue;
         els[i].setAttribute("contenteditable", isEditing ? "true" : "false");
       }
       btn.textContent = isEditing ? "Done editing" : "Edit";
-      btn.classList.toggle("is-active", isEditing);
+      btn.classList.toggle("button--primary", isEditing);
       if (!isEditing) saveEdits();
     }
 
@@ -410,8 +426,12 @@
       for (var i = 0; i < els.length; i++) {
         data[els[i].tagName + "-" + i] = els[i].innerHTML;
       }
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); showToast("Saved"); }
-      catch (e) { showToast("Could not save"); }
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        showToast("Saved");
+      } catch (e) {
+        showToast("Could not save");
+      }
     }
 
     function loadEdits() {
@@ -442,7 +462,8 @@
     function showToast(msg) {
       var t = document.getElementById("toast");
       if (!t) return;
-      t.textContent = msg; t.classList.add("show");
+      t.textContent = msg;
+      t.classList.add("show");
       window.setTimeout(function() { t.classList.remove("show"); }, 2000);
     }
 

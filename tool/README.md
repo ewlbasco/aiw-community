@@ -23,7 +23,6 @@ python3 -m unittest discover -s tests -v
 - Brand color and font detection from CSS
 - Editable HTML (click Edit, change text, Export)
 - PDF Slide Deck and PDF Document via Playwright
-- PowerPoint export
 
 ## Not measured
 

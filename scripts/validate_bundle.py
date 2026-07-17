@@ -153,8 +153,42 @@ def main() -> int:
             failures.append(f"conversion-engine is missing required phrase: {phrase}")
 
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
-    if not re.search(r"Freshness check:\s*2026-07-0[1-9]", readme):
+    if not re.search(r"Freshness check:\s*2026-07-(0[1-9]|[12][0-9]|3[01])", readme):
         failures.append("README is missing the current freshness check")
+
+    hook = ROOT / ".githooks" / "pre-push"
+    if not hook.is_file():
+        failures.append("Missing required pre-push gate: .githooks/pre-push")
+    else:
+        hook_text = hook.read_text(encoding="utf-8")
+        required_hook_commands = (
+            "python3 scripts/validate_bundle.py",
+            "python3 -m unittest discover -s tool/tests",
+        )
+        for command in required_hook_commands:
+            if command not in hook_text:
+                failures.append(f"pre-push hook is missing required command: {command}")
+        if not hook.stat().st_mode & 0o111:
+            failures.append("pre-push hook exists but is not executable")
+
+    active_surface_files = [
+        ROOT / "README.md",
+        ROOT / "tool" / "README.md",
+        ROOT / "tool" / "app.py",
+        ROOT / "tool" / "report_renderer.py",
+        ROOT / "tool" / "templates" / "client_deck.html",
+        ROOT / "tool" / "templates" / "report.html",
+        ROOT / "tool" / "static" / "app.js",
+        ROOT / "tool" / "requirements.txt",
+    ]
+    forbidden_powerpoint_markers = ("PowerPoint", ".pptx", "pptx_url", "/pptx")
+    for path in active_surface_files:
+        text = path.read_text(encoding="utf-8")
+        for marker in forbidden_powerpoint_markers:
+            if marker in text:
+                failures.append(
+                    f"{path.relative_to(ROOT)} contains forbidden PowerPoint/PPTX marker: {marker}"
+                )
 
     if failures:
         print("BUNDLE VALIDATION: FAIL")

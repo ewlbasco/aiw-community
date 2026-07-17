@@ -234,13 +234,14 @@ class ReportTests(unittest.TestCase):
         self.assertEqual(report_id, "test-report")
         self.assertNotIn("<script>alert(1)</script>", html)
         self.assertIn("Example &lt;script&gt;", html)
-        self.assertIn('href="test-report.pptx"', html)
+        self.assertNotIn(".pptx", html)
+        self.assertNotIn("PowerPoint", html)
         self.assertIn('href="test-report-specialist.html"', html)
         self.assertIn("Direct.", html)
         self.assertIn("Needs proof.", html)
         self.assertIn("Main next step:", html)
 
-    def test_report_bundle_creates_editable_pptx_and_specialist_report(self) -> None:
+    def test_report_bundle_creates_client_specialist_and_index_reports(self) -> None:
         audit = {
             "audit_id": "test",
             "generated_at": "2026-06-29T00:00:00+00:00",
@@ -307,7 +308,8 @@ class ReportTests(unittest.TestCase):
         bundle = render_report_bundle(audit, "test-report-bundle")
         self.assertTrue(bundle["client_html"].is_file())
         self.assertTrue(bundle["specialist_html"].is_file())
-        self.assertTrue(bundle["pptx"].is_file())
+        self.assertTrue(bundle["index_html"].is_file())
+        self.assertNotIn("pptx", bundle)
         client_html = bundle["client_html"].read_text(encoding="utf-8")
         specialist_html = bundle["specialist_html"].read_text(encoding="utf-8")
         self.assertIn("Current conversion readiness", client_html)

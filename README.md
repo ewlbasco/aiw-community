@@ -1,23 +1,23 @@
 # Conversion + Visibility Audit
 
+Freshness check: 2026-07-17
+
 Diagnose whether a website is difficult to find, difficult to understand, or
 difficult to convert. Get a branded report, an editable HTML you can modify,
-and a finished PDF you can send.
+and a finished local report you can review.
 
 ## How it works
 
 1. Enter a URL
 2. Choose audit mode (Conversion, Visibility, or Full)
-3. The tool crawls the site, scores it, and generates three deliverables
+3. The tool crawls the site, scores it, and generates editable local HTML reports
 
 ## Output formats
 
 | Format | What it is |
 |--------|-----------|
 | **Editable HTML** | Click Edit, change the text, save to localStorage, export when ready |
-| **PDF Slide Deck** | Landscape A4, one slide per page, matches the visual layout |
-| **PDF Document** | Portrait A4, compact document format, ready to send |
-| **PowerPoint** | Editable slides for further modification |
+| **Specialist HTML** | Detailed internal report with the evidence and technical notes |
 
 ## Product Ladder
 
@@ -41,6 +41,21 @@ python3 app.py
 ```
 
 Open `http://127.0.0.1:8765`.
+
+## Required pre-push gate
+
+This repo uses `.githooks/pre-push`. Before pushing, Git must run:
+
+```bash
+python3 scripts/validate_bundle.py
+python3 -m unittest discover -s tool/tests
+```
+
+Set the hook path once after cloning:
+
+```bash
+git config core.hooksPath .githooks
+```
 
 ## Live demos
 

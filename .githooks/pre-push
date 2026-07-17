@@ -1,0 +1,20 @@
+#!/bin/sh
+set -eu
+
+echo "Running conversion-visibility-audit pre-push gate..."
+
+python3 scripts/validate_bundle.py
+python3 -m unittest discover -s tool/tests
+
+if grep -RIn "karvatech-portfolio\|keywestkate\|Baldwin & Co\|vercel-share-lime" . \
+  --exclude-dir=.git \
+  --exclude-dir=.githooks \
+  --exclude-dir=_archived \
+  --exclude-dir=archives \
+  --exclude-dir=outputs \
+  --exclude-dir=validation; then
+  echo "ERROR: client audit data or old public deployment reference found in active repo files."
+  exit 1
+fi
+
+echo "Pre-push gate passed."
