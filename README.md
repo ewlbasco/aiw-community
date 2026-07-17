@@ -10,7 +10,7 @@ and a finished local report you can review.
 
 1. Enter a URL
 2. Choose audit mode (Conversion, Visibility, or Full)
-3. The tool crawls the site, scores it, and generates editable local HTML reports
+3. The tool crawls the site, runs semantic scoring when the LLM path is configured, and generates editable local HTML reports
 
 ## Output formats
 
@@ -18,6 +18,8 @@ and a finished local report you can review.
 |--------|-----------|
 | **Editable HTML** | Click Edit, change the text, save to localStorage, export when ready |
 | **Specialist HTML** | Detailed internal report with the evidence and technical notes |
+| **Slide PDF** | Final slide-deck export generated from approved HTML |
+| **Document PDF** | Final document export generated from approved HTML |
 
 ## Product Ladder
 
@@ -36,6 +38,7 @@ separate services.
 git clone https://github.com/ewlbasco/conversion-visibility-audit.git
 cd conversion-visibility-audit/tool
 pip install -r requirements.txt
+playwright install chromium
 python3 app.py
 ```
 
@@ -63,7 +66,7 @@ git config core.hooksPath .githooks
 ## Requirements
 
 - Python 3.12+
-- `requests`, `Jinja2`, and `python-docx`
+- `requests`, `Jinja2`, `playwright`, `instructor`, `litellm`, and `pydantic`
 
 ## How the audit works
 
@@ -71,14 +74,14 @@ The engine checks public pages, message, offers, forms, search setup, language,
 and visible brand cues. It does not measure rendered JavaScript, Core Web Vitals,
 analytics, backlinks, or live AI citations.
 
-Conversion is scored across five layers: Business / Positioning, Messaging,
-Offer, Trust, and Conversion. Visibility covers technical discovery, on-page
-clarity, content quality, GEO, AEO, accessibility, and security.
+Conversion is scored across five layers through the configured LLM path:
+Business / Positioning, Messaging, Offer, Trust, and Conversion. Visibility
+covers technical discovery, on-page clarity, content quality, GEO, AEO,
+accessibility, and security.
 
-By default, conversion scoring is deterministic and heuristic. Optional LLM
-scoring is opt-in with `WEBSITE_AUDIT_ENABLE_LLM=1` and a configured
-OpenAI-compatible `litellm` setup; use `WEBSITE_AUDIT_LLM_MODEL` to override the
-model.
+Set `WEBSITE_AUDIT_ENABLE_LLM=1` and configure an OpenAI-compatible `litellm`
+setup before running Conversion or Full audits. Use `WEBSITE_AUDIT_LLM_MODEL` to
+override the model.
 
 ## License
 

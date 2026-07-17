@@ -10,6 +10,8 @@ const errorState = document.querySelector("#error-state");
 const errorMessage = document.querySelector("#error-message");
 const openReport = document.querySelector("#open-report");
 const downloadReport = document.querySelector("#download-report");
+const downloadSlidePdf = document.querySelector("#download-slide-pdf");
+const downloadDocumentPdf = document.querySelector("#download-document-pdf");
 const openSpecialist = document.querySelector("#open-specialist");
 const newAudit = document.querySelector("#new-audit");
 
@@ -95,6 +97,8 @@ form.addEventListener("submit", async (event) => {
 
     openReport.href = data.report_url;
     downloadReport.href = data.download_url;
+    downloadSlidePdf.href = data.slide_pdf_url;
+    downloadDocumentPdf.href = data.document_pdf_url;
     openSpecialist.href = data.specialist_url;
     if (data.index_url) {
       var indexLink = document.getElementById("open-index") || (function() {

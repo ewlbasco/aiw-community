@@ -32,5 +32,5 @@ status: active
 
 ## Known Debt
 - `audit_engine.py` single-page only — no internal link following
-- Brand detection is heuristic-only (CSS variable + meta tag parsing)
+- Brand detection is source-code cue-only (CSS variable + meta tag parsing)
 - No auth/basic-auth support for staging sites

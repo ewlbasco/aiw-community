@@ -166,6 +166,24 @@ class ParserTests(unittest.TestCase):
 
 
 class ReportTests(unittest.TestCase):
+    def test_app_contract_uses_html_source_and_pdf_exports(self) -> None:
+        app_text = (ROOT / "app.py").read_text(encoding="utf-8")
+        static_text = (ROOT / "static" / "index.html").read_text(encoding="utf-8")
+        audit_engine_text = (ROOT / "audit_engine.py").read_text(encoding="utf-8")
+        requirements = (ROOT / "requirements.txt").read_text(encoding="utf-8")
+
+        self.assertIn("/pdf/slide", app_text)
+        self.assertIn("/pdf/document", app_text)
+        self.assertIn("slide_pdf_url", app_text)
+        self.assertIn("document_pdf_url", app_text)
+        self.assertIn("Slide PDF", static_text)
+        self.assertIn("Document PDF", static_text)
+        self.assertIn("playwright", requirements)
+        self.assertNotIn("/docx", app_text)
+        self.assertNotIn("docx_url", app_text)
+        self.assertNotIn("python-docx", requirements)
+        self.assertNotIn("pattern-scoring fallback", audit_engine_text)
+
     def test_report_renderer_escapes_site_text(self) -> None:
         audit = {
             "audit_id": "test",
@@ -236,14 +254,14 @@ class ReportTests(unittest.TestCase):
         self.assertIn("Example &lt;script&gt;", html)
         self.assertNotIn(".pptx", html)
         self.assertNotIn("PowerPoint", html)
-        self.assertNotIn(".pdf", html)
-        self.assertNotIn("PDF", html)
+        self.assertNotIn(".docx", html)
+        self.assertNotIn("Word", html)
         self.assertIn('href="test-report-specialist.html"', html)
         self.assertIn("Direct.", html)
         self.assertIn("Needs proof.", html)
         self.assertIn("Main next step:", html)
 
-    def test_report_bundle_creates_client_specialist_and_index_reports(self) -> None:
+    def test_report_bundle_creates_html_source_specialist_and_index_reports(self) -> None:
         audit = {
             "audit_id": "test",
             "generated_at": "2026-06-29T00:00:00+00:00",
@@ -312,6 +330,7 @@ class ReportTests(unittest.TestCase):
         self.assertTrue(bundle["specialist_html"].is_file())
         self.assertTrue(bundle["index_html"].is_file())
         self.assertNotIn("pptx", bundle)
+        self.assertNotIn("docx", bundle)
         client_html = bundle["client_html"].read_text(encoding="utf-8")
         specialist_html = bundle["specialist_html"].read_text(encoding="utf-8")
         self.assertIn("Current conversion readiness", client_html)

@@ -922,7 +922,7 @@ class AuditEngine:
                 "root_layer": conversion["root_layer"],
                 "rewrite_eligible": conversion["rewrite_eligible"],
                 "findings": [finding.as_dict() for finding in conversion["findings"]],
-                "score_source": conversion.get("score_source", "heuristic"),
+                "score_source": conversion["score_source"],
             },
             "visibility": {
                 "measured_score": visibility["measured_score"],
@@ -945,15 +945,13 @@ class AuditEngine:
                 "This local build reads server HTML and linked public CSS/JavaScript, but it does not execute a rendered browser session.",
                 "Core Web Vitals, rendered visual hierarchy, contrast, keyboard behavior, analytics, backlinks, rankings, competitors, and AI-platform citations are not measured in this MVP.",
                 "Detected brand colors and fonts are public-code cues and must be verified before client delivery.",
-                f"Conversion scoring source: {conversion.get('score_source', 'heuristic')}. When 'heuristic', scores come from keyword/pattern detection. When 'llm', scores come from LLM semantic analysis of page text.",
+                "Conversion scoring source: llm. Semantic scores require the configured LLM path; the tool does not fall back to pattern scoring.",
                 "A complete conversion judgment also requires rendered desktop and mobile review plus strategic copy review.",
-                "The design score is a heuristic scan based on HTML/CSS signals (typography count, color palette size, premium language balance, alt-text coverage). A full rendered visual audit requires the hallmark skill or a human designer.",
+                "The design section is a source-code evidence precheck based on HTML/CSS signals. A full rendered visual audit requires the hallmark skill or a human designer.",
             ],
         }
 
-    # ── LLM-based REAL conversion scoring ─────────────────────────────────
-    # Uses instructor + litellm for genuine semantic analysis.
-    # Falls back to HEURISTIC keyword scoring when LLM is unavailable.
+    # LLM-based semantic conversion scoring. No pattern-scoring substitute.
 
     class _ConversionScores(BaseModel):
         business_positioning: int = Field(..., ge=0, le=20, description="Score 0-20: Does the site clearly state who it's for and what changes?")
@@ -968,25 +966,30 @@ class AuditEngine:
         homepage_title: str,
         homepage_description: str,
         desired_outcome: str,
-    ) -> dict[str, Any] | None:
-        """REAL conversion scoring via LLM. Returns None if unavailable."""
+    ) -> dict[str, Any]:
+        """Score conversion dimensions through the configured LLM path."""
         if os.environ.get("WEBSITE_AUDIT_ENABLE_LLM") != "1" or not HAS_PYDANTIC:
-            return None
+            raise RuntimeError(
+                "Semantic conversion scoring requires WEBSITE_AUDIT_ENABLE_LLM=1 "
+                "and pydantic. The tool will not generate pattern-based conversion scores."
+            )
 
         try:
             import instructor
             import litellm
-        except ImportError:
-            return None
+        except ImportError as exc:
+            raise RuntimeError(
+                "Semantic conversion scoring requires instructor and litellm. "
+                "Install requirements before running conversion or full audits."
+            ) from exc
 
-        # Use instructor with litellm via the OpenAI-compatible interface
         try:
             client = instructor.from_openai(
                 litellm.OpenAI(),
                 mode=instructor.Mode.JSON,
             )
-        except Exception:
-            return None
+        except Exception as exc:
+            raise RuntimeError("Semantic conversion scoring could not initialize the LLM client.") from exc
 
         system_prompt = (
             "You are an expert conversion auditor. Given a website's page text, "
@@ -1032,8 +1035,8 @@ class AuditEngine:
                 },
                 "source": "llm",
             }
-        except Exception:
-            return None
+        except Exception as exc:
+            raise RuntimeError("Semantic conversion scoring failed before producing validated scores.") from exc
 
     def conversion_audit(self, pages: list[PageEvidence], context: str) -> dict[str, Any]:
         homepage = pages[0]
@@ -1042,17 +1045,13 @@ class AuditEngine:
         findings: list[Finding] = []
         business_context = self.infer_business_context(pages)
 
-        # ── REAL LLM scoring with HEURISTIC fallback ─────────────────────
         llm_scores = self._llm_conversion_scores(
             page_text=all_text,
             homepage_title=homepage.title,
             homepage_description=homepage.description,
             desired_outcome=context,
         )
-        conversion_score_source = "heuristic"
-
-        if llm_scores is not None:
-            conversion_score_source = "llm"
+        conversion_score_source = llm_scores["source"]
 
         layers = {
             "Business / Positioning": 20,
@@ -1417,9 +1416,7 @@ class AuditEngine:
                 )
             )
 
-        # If LLM scoring succeeded, override layers with REAL LLM scores
-        if llm_scores is not None:
-            layers = llm_scores["layers"]
+        layers = llm_scores["layers"]
 
         root_layer = min(layers, key=layers.get)
         unresolved_upstream = root_layer in {"Business / Positioning", "Offer"} and layers[root_layer] < 14
@@ -1596,7 +1593,7 @@ class AuditEngine:
             "score": max(0, score),
             "findings": [finding.as_dict() for finding in findings],
             "design_source": design_source,
-            "note": "This design score is a heuristic scan of public HTML and CSS. A rendered visual review by hallmark or a human designer is required for a complete assessment.",
+            "note": "This design section is a source-code evidence precheck of public HTML and CSS. A rendered visual review by hallmark or a human designer is required for a complete assessment.",
         }
 
     def opportunity_scan(
@@ -1897,7 +1894,7 @@ class AuditEngine:
                 "risks": copy_risks[:3],
             },
             "design": {
-                "works": "The public HTML and CSS suggest that the site has a defined visual direction. An automated heuristic scan was run against typography, color palette, and accessibility basics.",
+                "works": "The public HTML and CSS suggest that the site has a defined visual direction. A source-code evidence precheck was run against typography, color palette, and accessibility basics.",
                 "risk": "This automated scan does not replace a rendered desktop and mobile review. Readability, spacing, overlap, hierarchy, trust cues, and interaction still need a visual pass using the hallmark skill or a human designer.",
             },
             "main_next_step": primary_next_step,

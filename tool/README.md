@@ -4,6 +4,7 @@
 
 ```bash
 pip install -r requirements.txt
+playwright install chromium
 python3 app.py
 ```
 
@@ -21,8 +22,9 @@ python3 -m unittest discover -s tests -v
 - Conversion, Visibility, or Full audit mode
 - Brand color and font detection from CSS
 - Editable HTML (click Edit, change text, Export)
-- Editable DOCX working document
-- Optional LLM conversion scoring when `WEBSITE_AUDIT_ENABLE_LLM=1` is set
+- Final slide-deck PDF generated from approved HTML
+- Final document PDF generated from approved HTML
+- Required LLM conversion scoring when `WEBSITE_AUDIT_ENABLE_LLM=1` is set
 
 ## Not measured
 

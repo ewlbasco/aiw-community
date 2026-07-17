@@ -175,40 +175,57 @@ def main() -> int:
         ROOT / "README.md",
         ROOT / "tool" / "README.md",
         ROOT / "tool" / "app.py",
+        ROOT / "tool" / "audit_engine.py",
         ROOT / "tool" / "report_renderer.py",
         ROOT / "tool" / "templates" / "client_deck.html",
         ROOT / "tool" / "templates" / "report.html",
         ROOT / "tool" / "static" / "app.js",
         ROOT / "tool" / "requirements.txt",
     ]
-    forbidden_export_markers = (
+    forbidden_markers = (
         "PowerPoint",
         ".pptx",
         "pptx_url",
         "/pptx",
-        "PDF",
-        ".pdf",
-        "pdf_url",
-        "/pdf",
-        "pdf_renderer",
-        "Playwright",
-        "playwright",
+        "DOCX",
+        ".docx",
+        "docx_url",
+        "/docx",
+        "Editable Word",
+        "Word document",
+        "Word file",
+        "python-docx",
+        "heuristic",
+        "HEURISTIC",
+        "fallback",
     )
     for path in active_surface_files:
         text = path.read_text(encoding="utf-8")
-        for marker in forbidden_export_markers:
+        for marker in forbidden_markers:
             if marker in text:
                 failures.append(
-                    f"{path.relative_to(ROOT)} contains forbidden export marker: {marker}"
+                    f"{path.relative_to(ROOT)} contains forbidden marker: {marker}"
                 )
 
     stale_export_files = (
         ROOT / "tool" / "pptx_renderer.py",
-        ROOT / "tool" / "pdf_renderer.py",
+        ROOT / "tool" / "docx_renderer.py",
     )
     for path in stale_export_files:
         if path.exists():
-            failures.append(f"Stale export renderer must not be active: {path.relative_to(ROOT)}")
+            failures.append(f"Stale renderer must not be active: {path.relative_to(ROOT)}")
+
+    required_pdf_files = (
+        ROOT / "tool" / "pdf_renderer.py",
+    )
+    for path in required_pdf_files:
+        if not path.is_file():
+            failures.append(f"Missing required PDF renderer: {path.relative_to(ROOT)}")
+
+    app_text = (ROOT / "tool" / "app.py").read_text(encoding="utf-8")
+    for marker in ('"/pdf/slide"', '"/pdf/document"', '"slide_pdf_url"', '"document_pdf_url"'):
+        if marker not in app_text:
+            failures.append(f"app.py is missing required PDF contract marker: {marker}")
 
     if failures:
         print("BUNDLE VALIDATION: FAIL")

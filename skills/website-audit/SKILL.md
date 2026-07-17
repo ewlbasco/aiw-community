@@ -129,14 +129,15 @@ service call when structural implementation is required.
 
 ## Human-Facing Delivery
 
-Before delivery, ask whether the user wants:
+Use editable HTML as the working source. The user edits the HTML directly.
+After approval, export the final slide-deck PDF or final document PDF from the
+approved HTML.
 
-1. a branded interactive HTML presentation, recommended; or
-2. an editable Word or Google Doc version; or
-3. a PDF exported from the approved presentation.
+Do not use Word, Google Docs, DOCX, or PowerPoint as active Website Audit
+formats.
 
-Keep Markdown or structured data as the internal source. Do not expose raw
-Markdown as the client-facing audit.
+Keep structured data as internal implementation state. Do not expose raw
+internal data as the client-facing audit.
 
 Brand the report to the audited business using public colors, fonts, logo, and
 visual cues when available. Label these as detected cues until verified. Keep
