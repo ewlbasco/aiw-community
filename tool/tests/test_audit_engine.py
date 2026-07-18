@@ -10,6 +10,7 @@ sys.path.insert(0, str(ROOT))
 from audit_engine import (  # noqa: E402
     AuditEngine,
     EvidenceParser,
+    PageEvidence,
     UnsafeUrlError,
     assert_public_url,
     hex_to_oklch,
@@ -179,13 +180,66 @@ class ReportTests(unittest.TestCase):
         self.assertIn("Slide PDF", static_text)
         self.assertIn("Document PDF", static_text)
         self.assertIn("playwright", requirements)
+        self.assertIn("openai", requirements)
         self.assertIn("WEBSITE_AUDIT_LLM_API_BASE", audit_engine_text)
         self.assertIn("WEBSITE_AUDIT_LLM_API_KEY", audit_engine_text)
         self.assertIn("litellm.OpenAI(**client_kwargs)", audit_engine_text)
+        self.assertIn("from openai import OpenAI", audit_engine_text)
+        self.assertIn("conversion_not_run() if mode == \"visibility\"", audit_engine_text)
         self.assertNotIn("/docx", app_text)
         self.assertNotIn("docx_url", app_text)
         self.assertNotIn("python-docx", requirements)
         self.assertNotIn("pattern-scoring fallback", audit_engine_text)
+
+    def test_visibility_mode_does_not_call_conversion_scoring(self) -> None:
+        engine = AuditEngine()
+        page = PageEvidence(
+            url="https://example.com/",
+            status=200,
+            elapsed_ms=10,
+            size_bytes=len(SAMPLE_HTML),
+            headers={},
+            title="Example Studio",
+            description="Websites for established service businesses.",
+            h1=["Turn an outdated website into a clear sales path."],
+            h2=[],
+            links=[],
+            text="Example Studio helps service businesses improve website visibility.",
+            raw_html=SAMPLE_HTML,
+        )
+        visibility = {
+            "measured_score": 30,
+            "measured_max": 70,
+            "normalized_score": 43,
+            "categories": [],
+            "unmeasured": [],
+            "findings": [],
+        }
+
+        with patch.object(engine, "crawl", return_value=[page]), \
+             patch.object(engine, "fetch_status", return_value={"status": 200}), \
+             patch.object(engine, "external_assets", return_value=("", "")), \
+             patch.object(engine, "extract_brand", return_value={
+                 "name": "Example Studio",
+                 "primary_hex": "#17324d",
+                 "accent_hex": "#d66b3d",
+                 "primary_oklch": "oklch(0.3 0.05 250)",
+                 "accent_oklch": "oklch(0.6 0.12 40)",
+                 "fonts": [],
+                 "display_font": "",
+                 "body_font": "",
+                 "logo_url": "",
+                 "hero_image_url": "",
+                 "source": "Test brand.",
+             }), \
+             patch.object(engine, "visibility_audit", return_value=visibility), \
+             patch.object(engine, "design_audit", return_value={"score": 100, "findings": [], "note": "Test."}), \
+             patch.object(engine, "conversion_audit", side_effect=AssertionError("conversion scoring should not run")):
+            audit = engine.audit("https://example.com/", mode="visibility")
+
+        self.assertEqual(audit["conversion"]["score_source"], "not_run")
+        self.assertEqual(audit["conversion"]["score"], "N/A")
+        self.assertEqual(audit["visibility"]["normalized_score"], 43)
 
     def test_report_renderer_escapes_site_text(self) -> None:
         audit = {

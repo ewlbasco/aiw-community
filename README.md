@@ -66,7 +66,7 @@ git config core.hooksPath .githooks
 ## Requirements
 
 - Python 3.12+
-- `requests`, `Jinja2`, `playwright`, `instructor`, `litellm`, and `pydantic`
+- `requests`, `Jinja2`, `playwright`, `instructor`, `litellm`, `openai`, and `pydantic`
 
 ## How the audit works
 
@@ -83,9 +83,9 @@ Visibility mode can run without a model. Conversion and Full audits require
 the semantic scoring path because the tool refuses to invent conversion scores
 without model-backed judgment.
 
-Set `WEBSITE_AUDIT_ENABLE_LLM=1` and configure an OpenAI-compatible `litellm`
-setup before running Conversion or Full audits. Use `WEBSITE_AUDIT_LLM_MODEL` to
-override the model.
+Set `WEBSITE_AUDIT_ENABLE_LLM=1` and configure an OpenAI-compatible model
+endpoint before running Conversion or Full audits. Use
+`WEBSITE_AUDIT_LLM_MODEL` to override the model.
 
 ### Free local LLM option
 

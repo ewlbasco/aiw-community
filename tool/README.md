@@ -24,7 +24,7 @@ python3 -m unittest discover -s tests -v
 - Editable HTML (click Edit, change text, Export)
 - Final slide-deck PDF generated from approved HTML
 - Final document PDF generated from approved HTML
-- Required LLM conversion scoring when `WEBSITE_AUDIT_ENABLE_LLM=1` is set
+- Required model-backed conversion scoring for Conversion and Full modes
 
 Visibility mode can run without a model. Conversion and Full audits require the
 semantic scoring path.

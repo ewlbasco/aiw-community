@@ -220,9 +220,15 @@
           <p class="lead">The site already has a clear point of view. The next gain comes from making the choice, proof, and next step easier.</p>
         </div>
         <div class="statement__score">
+          {% if audit.mode == "visibility" %}
+          <div class="score">{{ audit.visibility.normalized_score }}</div>
+          <div class="score-label">Visibility evidence</div>
+          <p class="score-note">Conversion scoring was not run in this visibility-only pass.</p>
+          {% else %}
           <div class="score">{{ audit.conversion.score }}</div>
           <div class="score-label">Current conversion readiness</div>
           <p class="score-note">This is a directional score. It shows how clearly the site sells the next step today.</p>
+          {% endif %}
         </div>
       </div>
     </section>

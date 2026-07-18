@@ -893,7 +893,7 @@ class AuditEngine:
         sitemap = self.fetch_status(urljoin(origin, "/sitemap.xml"))
         css_text, script_text = self.external_assets(homepage)
         brand = self.extract_brand(pages, css_text)
-        conversion = self.conversion_audit(pages, context)
+        conversion = self.conversion_not_run() if mode == "visibility" else self.conversion_audit(pages, context)
         visibility = self.visibility_audit(pages, robots, sitemap, script_text)
         design = self.design_audit(pages, css_text)
         findings: list[Finding] = []
@@ -953,12 +953,56 @@ class AuditEngine:
 
     # LLM-based semantic conversion scoring. No pattern-scoring substitute.
 
+    @staticmethod
+    def conversion_not_run() -> dict[str, Any]:
+        return {
+            "score": "N/A",
+            "layers": [],
+            "root_layer": "Not run",
+            "rewrite_eligible": False,
+            "findings": [],
+            "score_source": "not_run",
+        }
+
     class _ConversionScores(BaseModel):
         business_positioning: int = Field(..., ge=0, le=20, description="Score 0-20: Does the site clearly state who it's for and what changes?")
         messaging: int = Field(..., ge=0, le=20, description="Score 0-20: Is the primary message clear, specific, and buyer-focused?")
         offer: int = Field(..., ge=0, le=20, description="Score 0-20: Is the offer easy to understand and choose from?")
         trust: int = Field(..., ge=0, le=20, description="Score 0-20: Does the site provide verifiable proof and trust signals?")
         conversion: int = Field(..., ge=0, le=20, description="Score 0-20: Is the path to action clear, low-friction, and specific?")
+
+    @staticmethod
+    def _scores_payload(scores: Any) -> dict[str, Any]:
+        return {
+            "score": sum([
+                scores.business_positioning,
+                scores.messaging,
+                scores.offer,
+                scores.trust,
+                scores.conversion,
+            ]),
+            "layers": {
+                "Business / Positioning": scores.business_positioning,
+                "Messaging": scores.messaging,
+                "Offer": scores.offer,
+                "Trust": scores.trust,
+                "Conversion": scores.conversion,
+            },
+            "source": "llm",
+        }
+
+    @staticmethod
+    def _parse_local_llm_scores(content: str) -> Any:
+        raw = content.strip()
+        if raw.startswith("```"):
+            raw = re.sub(r"^```(?:json)?\s*", "", raw)
+            raw = re.sub(r"\s*```$", "", raw)
+        start = raw.find("{")
+        end = raw.rfind("}")
+        if start == -1 or end == -1 or end <= start:
+            raise RuntimeError("Semantic conversion scoring returned non-JSON output.")
+        payload = json.loads(raw[start : end + 1])
+        return AuditEngine._ConversionScores(**payload)
 
     @staticmethod
     def _llm_conversion_scores(
@@ -975,8 +1019,8 @@ class AuditEngine:
             )
 
         try:
-            import instructor
-            import litellm
+            import instructor  # noqa: F811
+            import litellm  # noqa: F811
         except ImportError as exc:
             raise RuntimeError(
                 "Semantic conversion scoring requires instructor and litellm. "
@@ -1020,6 +1064,33 @@ class AuditEngine:
             f"Page text:\n{text_sample}\n"
         )
 
+        if api_base:
+            try:
+                from openai import OpenAI
+
+                client = OpenAI(base_url=api_base, api_key=api_key or "ollama")
+                completion = client.chat.completions.create(
+                    model=os.environ.get("WEBSITE_AUDIT_LLM_MODEL", "gpt-4o-mini"),
+                    messages=[
+                        {
+                            "role": "system",
+                            "content": (
+                                system_prompt
+                                + " Return only a JSON object with integer keys: "
+                                "business_positioning, messaging, offer, trust, conversion. "
+                                "Do not return a schema, markdown, commentary, or nested object."
+                            ),
+                        },
+                        {"role": "user", "content": user_prompt},
+                    ],
+                    temperature=0,
+                )
+                content = completion.choices[0].message.content or ""
+                scores = AuditEngine._parse_local_llm_scores(content)
+                return AuditEngine._scores_payload(scores)
+            except Exception as exc:
+                raise RuntimeError("Semantic conversion scoring failed before producing validated scores.") from exc
+
         try:
             scores, _ = client.chat.completions.create_with_completion(
                 model=os.environ.get("WEBSITE_AUDIT_LLM_MODEL", "gpt-4o-mini"),
@@ -1030,23 +1101,7 @@ class AuditEngine:
                 response_model=AuditEngine._ConversionScores,
                 max_retries=1,
             )
-            return {
-                "score": sum([
-                    scores.business_positioning,
-                    scores.messaging,
-                    scores.offer,
-                    scores.trust,
-                    scores.conversion,
-                ]),
-                "layers": {
-                    "Business / Positioning": scores.business_positioning,
-                    "Messaging": scores.messaging,
-                    "Offer": scores.offer,
-                    "Trust": scores.trust,
-                    "Conversion": scores.conversion,
-                },
-                "source": "llm",
-            }
+            return AuditEngine._scores_payload(scores)
         except Exception as exc:
             raise RuntimeError("Semantic conversion scoring failed before producing validated scores.") from exc
 
@@ -1057,7 +1112,7 @@ class AuditEngine:
         findings: list[Finding] = []
         business_context = self.infer_business_context(pages)
 
-        llm_scores = self._llm_conversion_scores(
+        llm_scores = AuditEngine._llm_conversion_scores(
             page_text=all_text,
             homepage_title=homepage.title,
             homepage_description=homepage.description,
@@ -1888,13 +1943,16 @@ class AuditEngine:
             for item in visibility["categories"]
         ]
 
-        root_plain = {
-            "Business / Positioning": "The site first needs a clearer answer to who it is for and what changes.",
-            "Messaging": "The service may be sound, but the message is making it harder to understand.",
-            "Offer": "The main problem is not the design. It is choosing what to buy and where to start.",
-            "Trust": "The promise needs more proof before visitors can feel confident.",
-            "Conversion": "The offer is understandable, but the path to action has too much friction.",
-        }[conversion["root_layer"]]
+        if conversion.get("score_source") == "not_run":
+            root_plain = "This pass only measured visibility evidence. Conversion judgment was not run because no model-backed conversion scoring was requested."
+        else:
+            root_plain = {
+                "Business / Positioning": "The site first needs a clearer answer to who it is for and what changes.",
+                "Messaging": "The service may be sound, but the message is making it harder to understand.",
+                "Offer": "The main problem is not the design. It is choosing what to buy and where to start.",
+                "Trust": "The promise needs more proof before visitors can feel confident.",
+                "Conversion": "The offer is understandable, but the path to action has too much friction.",
+            }[conversion["root_layer"]]
 
         return {
             "headline": root_plain,
